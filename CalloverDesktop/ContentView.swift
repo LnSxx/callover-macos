@@ -8,76 +8,109 @@
 import SwiftUI
 import CoreData
 
-struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
+enum AuthentificationType {
+    case signIn
+    case signUp
+}
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+struct ContentView: View {
+    @State private var authenticationType = AuthentificationType.signIn
+    @State private var email: String = ""
+    @State private var password: String = ""
+    @State private var rememberMe: Bool = false
+    @State private var isLoggingIn: Bool = false
+    @State private var errorMessage: String? = nil
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        VStack(spacing: 16) {
+            // Title
+            Text("Sign in")
+                .font(.largeTitle)
+                .fontWeight(.semibold)
+
+            // Optional error message
+            if let errorMessage = errorMessage, !errorMessage.isEmpty {
+                Text(errorMessage)
+                    .foregroundStyle(.red)
+                    .font(.callout)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+
+            // Fields
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Email")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                TextField("name@example.com", text: $email)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.username)
+                    .disableAutocorrection(true)
+
+                Text("Password")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                SecureField("••••••••", text: $password)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.password)
+            }
+
+            // Remember me + Forgot password
+            HStack {
+                Toggle("Remember me", isOn: $rememberMe)
+                Spacer()
+                Button("Forgot password?") {
+                    // TODO: Handle forgot password
+                }
+                .buttonStyle(.link)
+            }
+
+            // Sign in button
+            Button {
+                signIn()
+            } label: {
+                if isLoggingIn {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                } else {
+                    Text("Sign in")
+                        .frame(maxWidth: .infinity)
                 }
             }
-            Text("Select an item")
+            .keyboardShortcut(.defaultAction)
+            .buttonStyle(.borderedProminent)
+            .disabled(!canSubmit || isLoggingIn)
+
         }
+        .padding(24)
+        .frame(minWidth: 360)
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
+    private var canSubmit: Bool {
+        !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !password.isEmpty
     }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
+    private func signIn() {
+        errorMessage = nil
+        guard canSubmit else {
+            errorMessage = "Please enter email and password."
+            return
+        }
+        isLoggingIn = true
 
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        // Simulate async login for demo purposes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            isLoggingIn = false
+            if email.lowercased() == "test@example.com" && password == "password" {
+                // Success path
+                // TODO: Navigate to the next screen or update app state
+            } else {
+                errorMessage = "Invalid email or password."
             }
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
 #Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    ContentView()
 }
