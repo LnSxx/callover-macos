@@ -1,0 +1,9 @@
+//
+//  Debug.xcconfig
+//  CalloverDesktop
+//
+//  Created by Leonid  on 20.04.26.
+//
+
+SLASH = /
+API_BASE_URL = http:$(SLASH)$(SLASH)localhost:3000

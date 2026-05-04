@@ -10,9 +10,27 @@
 		B37D5C822F8CCDA200A3E3E7 /* CalloverDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CalloverDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B3351B8F2F95C05F009A01BB /* Exceptions for "CalloverDesktop" folder in "CalloverDesktop" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B37D5C812F8CCDA200A3E3E7 /* CalloverDesktop */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		B3351B922F95C0FB009A01BB /* Config */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Config;
+			sourceTree = "<group>";
+		};
 		B37D5C842F8CCDA200A3E3E7 /* CalloverDesktop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B3351B8F2F95C05F009A01BB /* Exceptions for "CalloverDesktop" folder in "CalloverDesktop" target */,
+			);
 			path = CalloverDesktop;
 			sourceTree = "<group>";
 		};
@@ -32,6 +50,7 @@
 		B37D5C792F8CCDA200A3E3E7 = {
 			isa = PBXGroup;
 			children = (
+				B3351B922F95C0FB009A01BB /* Config */,
 				B37D5C832F8CCDA200A3E3E7 /* Products */,
 				B37D5C842F8CCDA200A3E3E7 /* CalloverDesktop */,
 			);
@@ -61,6 +80,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				B3351B922F95C0FB009A01BB /* Config */,
 				B37D5C842F8CCDA200A3E3E7 /* CalloverDesktop */,
 			);
 			name = CalloverDesktop;
@@ -127,6 +147,8 @@
 /* Begin XCBuildConfiguration section */
 		B37D5C902F8CCDA300A3E3E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = B3351B922F95C0FB009A01BB /* Config */;
+			baseConfigurationReferenceRelativePath = Debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -247,6 +269,8 @@
 		};
 		B37D5C932F8CCDA300A3E3E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = B3351B922F95C0FB009A01BB /* Config */;
+			baseConfigurationReferenceRelativePath = Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -257,9 +281,20 @@
 				DEVELOPMENT_TEAM = 7XQW9CN78C;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CalloverDesktop/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Callover;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -293,9 +328,20 @@
 				DEVELOPMENT_TEAM = 7XQW9CN78C;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CalloverDesktop/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Callover;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
