@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RegisterView: View {
     @StateObject private var registerViewModel: RegisterViewModel
+    @EnvironmentObject private var authGateViewModel: AuthGateViewModel
     
     let onSignInTap: () -> Void
     
@@ -64,7 +65,13 @@ struct RegisterView: View {
             .frame(maxWidth: 300)
             
             // Submit button
-            Button(action: { registerViewModel.submitRegister() }) {
+            Button {
+                Task {
+                    if let profile = await registerViewModel.submitRegister() {
+                        authGateViewModel.authenticate(userProfile: profile)
+                    }
+                }
+            } label: {
                 if registerViewModel.state.isLoading {
                     ProgressView().controlSize(.small)
                 } else {
@@ -97,4 +104,5 @@ struct RegisterView: View {
 #Preview {
     let authService = AuthService()
     RegisterView(authService: authService) {}
+        .environmentObject(AuthGateViewModel(authService: authService))
 }

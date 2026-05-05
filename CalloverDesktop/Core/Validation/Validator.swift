@@ -76,15 +76,6 @@ enum Validator {
             return .failure(.custom("Password must not contain leading or trailing spaces"))
         }
         
-        // 4. Base complexity checks
-        let hasLowercase = password.rangeOfCharacter(from: .lowercaseLetters) != nil
-        let hasUppercase = password.rangeOfCharacter(from: .uppercaseLetters) != nil
-        let hasDigit = password.rangeOfCharacter(from: .decimalDigits) != nil
-        
-        if !(hasLowercase && hasUppercase && hasDigit) {
-            return .failure(.custom("Password must contain uppercase, lowercase letters and a number"))
-        }
-        
         return .success(())
     }
 }

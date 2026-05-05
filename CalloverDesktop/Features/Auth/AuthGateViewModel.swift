@@ -30,7 +30,7 @@ class AuthGateViewModel: ObservableObject {
         }
     }
     
-    func login(userProfile: UserProfile) {
+    func authenticate(userProfile: UserProfile) {
         state = .authenticated(userProfile)
     }
     

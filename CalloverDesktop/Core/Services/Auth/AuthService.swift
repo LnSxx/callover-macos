@@ -60,7 +60,9 @@ struct AuthService: AuthServiceProtocol {
             SignUpRequest(username: username, password: password)
         )
         
-        return try await networkClient.send(request)
+        let dto: SignUpResponseDTO = try await networkClient.send(request, successStatusCode: 201)
+        
+        return dto.user
     }
     
     func logout() async throws -> Void {

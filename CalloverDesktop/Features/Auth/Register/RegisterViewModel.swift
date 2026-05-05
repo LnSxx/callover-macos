@@ -25,8 +25,6 @@ final class RegisterViewModel: ObservableObject {
     
     private let authService: AuthServiceProtocol
     
-    var onLoginSuccess: ((UserProfile) -> Void)?
-    
     init(authService: AuthServiceProtocol) {
         self.authService = authService
     }
@@ -102,13 +100,13 @@ final class RegisterViewModel: ObservableObject {
         state.submitError = "Something went wrong"
     }
     
-    func submitRegister() {
+    func submitRegister() async -> UserProfile? {
         guard !state.isLoading else {
-            return
+            return nil
         }
         
         guard validateForm() else {
-            return
+            return nil
         }
         
         let username = state.username
@@ -117,17 +115,15 @@ final class RegisterViewModel: ObservableObject {
         state.isLoading = true
         state.submitError = nil
         
-        Task {
-            defer { state.isLoading = false }
-            
-            do {
-                let profile = try await authService.signUp(username: username, password: password)
-                onLoginSuccess?(profile)
-            } catch let error as NetworkError {
-                apply(error)
-            } catch {
-                setDefaultSubmitErrorMessage()
-            }
+        defer { state.isLoading = false }
+        do {
+            return try await authService.signUp(username: username, password: password)
+        } catch let error as NetworkError {
+            apply(error)
+            return nil
+        } catch {
+            setDefaultSubmitErrorMessage()
+            return nil
         }
     }
 }

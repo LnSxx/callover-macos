@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject private var loginViewModel: LoginViewModel
+    @EnvironmentObject private var authGateViewModel: AuthGateViewModel
     
     // Closure
     let onCreateAccountTap: () -> Void
@@ -27,20 +28,47 @@ struct LoginView: View {
             
             // From fields
             VStack(alignment: .leading) {
-                // Username field
-                TextField("Username", text: $loginViewModel.username)
-                    .textFieldStyle(.roundedBorder)
-                    .disabled(loginViewModel.isLoading)
-                // Password field
-                SecureField("Password", text: $loginViewModel.password)
-                    .textFieldStyle(.roundedBorder)
-                    .disabled(loginViewModel.isLoading)
+                VStack(alignment: .leading, spacing: 6) {
+                    TextField("Username", text: $loginViewModel.state.username)
+                        .textFieldStyle(.roundedBorder)
+                        .disabled(loginViewModel.state.isLoading)
+                    
+                    if let error = loginViewModel.state.usernameError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    SecureField("Password", text: $loginViewModel.state.password)
+                        .textFieldStyle(.roundedBorder)
+                        .disabled(loginViewModel.state.isLoading)
+                    
+                    if let error = loginViewModel.state.passwordError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
+                
+                if let error = loginViewModel.state.submitError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
             }
             .frame(maxWidth: 300)
             
             // Submit button
-            Button(action: { loginViewModel.login() }) {
-                if loginViewModel.isLoading {
+            Button {
+                Task {
+                    if let profile = await loginViewModel.submitLogin() {
+                        authGateViewModel.authenticate(userProfile: profile)
+                    }
+                }
+            } label: {
+                if loginViewModel.state.isLoading {
                     ProgressView().controlSize(.small)
                 } else {
                     Text("Sign in")
@@ -50,7 +78,7 @@ struct LoginView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .frame(maxWidth: 300)
-            .disabled(loginViewModel.isLoading)
+            .disabled(loginViewModel.state.isLoading)
             
             // Suggestion if user don't have an account
             // Contains button that redirects to Register form
@@ -72,4 +100,5 @@ struct LoginView: View {
 #Preview {
     let authService = AuthService()
     LoginView(authService: authService) {}
+        .environmentObject(AuthGateViewModel(authService: authService))
 }

@@ -9,6 +9,6 @@ import Foundation
 
 struct UserProfile: Equatable, Codable {
     let id: String
+    let username: String
     let email: String?
-    let createdAt: Date
 }
