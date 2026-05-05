@@ -8,7 +8,6 @@
 import Foundation
 
 protocol AuthServiceProtocol {
-    func getProfile() async throws -> UserProfile
     func signIn(username: String, password: String) async throws -> UserProfile
     func signUp(username: String, password: String) async throws -> UserProfile
     func logout() async throws -> Void
@@ -17,17 +16,6 @@ protocol AuthServiceProtocol {
 struct AuthService: AuthServiceProtocol {
     private let baseURL = AppConfig.apiBaseURL
     private let networkClient = NetworkClient()
-    
-    func getProfile() async throws -> UserProfile {
-        guard let url = URL(string: "\(baseURL)/profile/me") else {
-            throw NetworkError.invalidUrl
-        }
-        
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
-        return try await networkClient.send(request)
-    }
     
     func signIn(username: String, password: String) async throws -> UserProfile {
         guard let url = URL(string: "\(baseURL)/auth/login") else {

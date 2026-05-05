@@ -99,6 +99,7 @@ struct LoginView: View {
 
 #Preview {
     let authService = AuthService()
+    let profileService = ProfileService()
     LoginView(authService: authService) {}
-        .environmentObject(AuthGateViewModel(authService: authService))
+        .environmentObject(AuthGateViewModel(profileService: profileService))
 }

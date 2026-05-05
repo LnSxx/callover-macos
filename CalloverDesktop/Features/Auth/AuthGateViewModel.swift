@@ -11,18 +11,18 @@ import Combine
 @MainActor
 class AuthGateViewModel: ObservableObject {
     @Published var state: AuthState = .loading
+
+    private let profileService: ProfileServiceProtocol
     
-    private let authService: AuthServiceProtocol
-    
-    init(authService: AuthServiceProtocol) {
-        self.authService = authService
+    init(profileService: ProfileServiceProtocol) {
+        self.profileService = profileService
         checkAuthenticationStatus()
     }
     
     func checkAuthenticationStatus() {
         Task {
             do {
-                let userProfile = try await authService.getProfile()
+                let userProfile = try await profileService.getProfile()
                 state = .authenticated(userProfile)
             } catch {
                 state = .unauthenticated

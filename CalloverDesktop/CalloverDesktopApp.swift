@@ -10,16 +10,18 @@ import CoreData
 
 @main
 struct CalloverDesktopApp: App {
-    // Services
     private var authService: AuthServiceProtocol
-    // Global view models
+    private var profileService: ProfileServiceProtocol
+
     @StateObject private var authGateViewModel: AuthGateViewModel
     
     init() {
         let authServiceInstance = AuthService()
-        let authGateViewModelInstance = AuthGateViewModel(authService: authServiceInstance)
+        let profileServiceInstance = ProfileService()
+        let authGateViewModelInstance = AuthGateViewModel(profileService: profileServiceInstance)
         
         self.authService = authServiceInstance
+        self.profileService = profileServiceInstance
         _authGateViewModel = StateObject(wrappedValue: authGateViewModelInstance)
     }
     
@@ -28,6 +30,7 @@ struct CalloverDesktopApp: App {
             AuthGateView()
                 .environmentObject(authGateViewModel)
                 .environment(\.authService, authService)
+                .environment(\.profileService, profileService)
         }
     }
 }

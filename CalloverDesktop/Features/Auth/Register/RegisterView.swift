@@ -103,6 +103,7 @@ struct RegisterView: View {
 
 #Preview {
     let authService = AuthService()
+    let profileService = ProfileService()
     RegisterView(authService: authService) {}
-        .environmentObject(AuthGateViewModel(authService: authService))
+        .environmentObject(AuthGateViewModel(profileService: profileService))
 }
