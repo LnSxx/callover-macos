@@ -6,87 +6,127 @@
 //
 
 import Foundation
-internal import Combine
+import Combine
+
+struct RegisterFormState {
+    var username = ""
+    var password = ""
+    var isAcceptedTerms = false
+    
+    var usernameError: String?
+    var passwordError: String?
+    var submitError: String?
+    var isLoading = false
+}
 
 @MainActor
-class RegisterViewModel: ObservableObject {
-    // CREATE ACCOUNT FIELDS & ERRORS
-    // Username field value
-    @Published var username = ""
-    // Password field value
-    @Published var password = ""
-    // Terms & conditions acceptance value
-    @Published var isAcceptedTerms: Bool = false
+final class RegisterViewModel: ObservableObject {
+    @Published var state = RegisterFormState()
     
-    // FIELDS VALIDATION ERROR VALUES
-    // Username field validation error text
-    @Published var usernameValidationErrorText: String? = nil
-    // Password field validation error text
-    @Published var passwordValidationErrorText: String? = nil
-    
-    // Submit loading state
-    @Published var isLoading = false
-    
-    // Submit error message
-    // Network error or error sent by server
-    @Published var submitErrorMessage: String? = nil
-    
-    // DEPENDENCIES
     private let authService: AuthServiceProtocol
     
-    // COMPLETION HANDLERS
     var onLoginSuccess: ((UserProfile) -> Void)?
     
     init(authService: AuthServiceProtocol) {
         self.authService = authService
     }
     
-    func switchTermsAndConditionAccept() {
-        isAcceptedTerms = !isAcceptedTerms
+    func toggleTermsAcceptance() {
+        state.isAcceptedTerms.toggle()
     }
     
-    func validateFields() {
-        // Clear previous validation errors
-        usernameValidationErrorText = nil
-        passwordValidationErrorText = nil
+    private func validateForm() -> Bool {
+        state.usernameError = nil
+        state.passwordError = nil
+        state.submitError = nil
         
-        // Validate username
-        if case .failure(let error) = Validator.validateUsername(username) {
-            usernameValidationErrorText = error.errorDescription
+        if case .failure(let error) = Validator.validateUsername(state.username) {
+            state.usernameError = error.errorDescription
         }
         
-        // Validate password
-        if case .failure(let error) = Validator.validatePassword(password) {
-            passwordValidationErrorText = error.errorDescription
+        if case .failure(let error) = Validator.validatePassword(state.password) {
+            state.passwordError = error.errorDescription
         }
         
+        if state.usernameError != nil || state.passwordError != nil {
+            state.submitError = "Please check provided data"
+            return false
+        }
+        
+        if !state.isAcceptedTerms {
+            state.submitError = "Make sure you've read Privacy Policy and accepted Terms & Conditions"
+            return false
+        }
+        
+        return true
+    }
+    
+    private func apply(_ error: NetworkError) {
+        switch error {
+        case .errorResponse(let response):
+            apply(response)
+        default:
+            setDefaultSubmitErrorMessage()
+        }
+    }
+    
+    private func apply(_ response: ErrorResponse) {
+        switch response.code {
+        case .CONFLICT:
+            state.usernameError = "Submitted username is already taken"
+        case .VALIDATION_ERROR:
+            guard let errors = response.errors else {
+                setDefaultSubmitErrorMessage()
+                return
+            }
+            
+            applyValidationErrors(errors)
+            
+        default:
+            setDefaultSubmitErrorMessage()
+        }
+    }
+    
+    private func applyValidationErrors(_ errors: [ERValidationError]) {
+        for error in errors {
+            switch error.field {
+            case .username:
+                state.usernameError = error.code.message
+            case .password:
+                state.passwordError = error.code.message
+            }
+        }
+    }
+    
+    private func setDefaultSubmitErrorMessage() {
+        state.submitError = "Something went wrong"
     }
     
     func submitRegister() {
-        validateFields()
-        
-        guard usernameValidationErrorText == nil &&
-        passwordValidationErrorText == nil else {
-            submitErrorMessage = "Please check provided data"
+        guard !state.isLoading else {
             return
         }
         
-        guard isAcceptedTerms else {
-            submitErrorMessage = "Make sure you've read Privacy Policy and accepted Terms & Conditions"
+        guard validateForm() else {
             return
         }
         
-        isLoading = true
-        submitErrorMessage = nil
+        let username = state.username
+        let password = state.password
+        
+        state.isLoading = true
+        state.submitError = nil
         
         Task {
+            defer { state.isLoading = false }
+            
             do {
                 let profile = try await authService.signUp(username: username, password: password)
-                isLoading = false
                 onLoginSuccess?(profile)
+            } catch let error as NetworkError {
+                apply(error)
             } catch {
-                isLoading = false
-                submitErrorMessage = "Error signing up: \(error.localizedDescription)"
+                setDefaultSubmitErrorMessage()
             }
         }
     }

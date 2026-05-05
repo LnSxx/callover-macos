@@ -7,7 +7,7 @@
 
 struct ErrorResponse: Equatable, Codable {
     let statusCode: Int
-    let code: String
+    let code: ERApiErrorCode
     let message: String
     let path: String
     let timestamp: String

@@ -7,7 +7,7 @@
 //
 
 struct ERValidationError: Equatable, Codable {
-    let field: String
+    let field: ValidationField
     let code: ERValidationErrorCode
     let message: String
 }

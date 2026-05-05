@@ -6,7 +6,7 @@
 //
 
 import Foundation
-internal import Combine
+import Combine
 
 @MainActor
 class AuthGateViewModel: ObservableObject {

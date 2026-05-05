@@ -27,11 +27,11 @@ struct RegisterView: View {
             // From fields
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
-                    TextField("Username", text: $registerViewModel.username)
+                    TextField("Username", text: $registerViewModel.state.username)
                         .textFieldStyle(.roundedBorder)
-                        .disabled(registerViewModel.isLoading)
+                        .disabled(registerViewModel.state.isLoading)
                     
-                    if let error = registerViewModel.usernameValidationErrorText {
+                    if let error = registerViewModel.state.usernameError {
                         Text(error)
                             .font(.caption)
                             .foregroundColor(.red)
@@ -39,23 +39,23 @@ struct RegisterView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 6) {
-                    SecureField("Password", text: $registerViewModel.password)
+                    SecureField("Password", text: $registerViewModel.state.password)
                         .textFieldStyle(.roundedBorder)
-                        .disabled(registerViewModel.isLoading)
+                        .disabled(registerViewModel.state.isLoading)
                     
-                    if let error = registerViewModel.passwordValidationErrorText {
+                    if let error = registerViewModel.state.passwordError {
                         Text(error)
                             .font(.caption)
                             .foregroundColor(.red)
                     }
                 }
                 
-                Toggle(isOn: $registerViewModel.isAcceptedTerms) {
+                Toggle(isOn: $registerViewModel.state.isAcceptedTerms) {
                     Text("I have read Privacy Policy and accepting Terms & Conditions")
                 }
-                .disabled(registerViewModel.isLoading)
+                .disabled(registerViewModel.state.isLoading)
                 
-                if let error = registerViewModel.submitErrorMessage {
+                if let error = registerViewModel.state.submitError {
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.red)
@@ -65,7 +65,7 @@ struct RegisterView: View {
             
             // Submit button
             Button(action: { registerViewModel.submitRegister() }) {
-                if registerViewModel.isLoading {
+                if registerViewModel.state.isLoading {
                     ProgressView().controlSize(.small)
                 } else {
                     Text("Sign up")
@@ -75,7 +75,7 @@ struct RegisterView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .frame(maxWidth: 300)
-            .disabled(registerViewModel.isLoading)
+            .disabled(registerViewModel.state.isLoading)
             
             // Suggestion if user don't have an account
             // Contains button that redirects to Register form
