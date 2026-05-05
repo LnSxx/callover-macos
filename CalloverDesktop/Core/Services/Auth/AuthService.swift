@@ -43,7 +43,9 @@ struct AuthService: AuthServiceProtocol {
             SignInRequest(username: username, password: password)
         )
         
-        return try await networkClient.send(request)
+        let dto: SignUpResponseDTO = try await networkClient.send(request)
+        
+        return dto.user
     }
     
     func signUp(username: String, password: String) async throws -> UserProfile {

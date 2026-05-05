@@ -8,14 +8,20 @@
 import Foundation
 
 struct NetworkClient {
-    func send<T: Decodable>(_ request: URLRequest, successStatusCode: Int = 200) async throws -> T {
+    func send<T: Decodable>(_ request: URLRequest) async throws -> T {
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.unexpectedResponse(nil)
         }
         
-        guard httpResponse.statusCode == successStatusCode else {
+        if (200...299).contains(httpResponse.statusCode) {
+            do {
+                return try JSONDecoder().decode(T.self, from: data)
+            } catch {
+                throw NetworkError.unexpectedResponse(error)
+            }
+        } else {
             do {
                 let errorResponse = try JSONDecoder().decode(ErrorResponse.self, from: data)
                 throw NetworkError.errorResponse(errorResponse)
@@ -25,22 +31,18 @@ struct NetworkClient {
                 throw NetworkError.unexpectedResponse(error)
             }
         }
-        
-        do {
-            return try JSONDecoder().decode(T.self, from: data)
-        } catch {
-            throw NetworkError.unexpectedResponse(error)
-        }
     }
     
-    func sendEmpty(_ request: URLRequest, successStatusCode: Int = 204) async throws {
+    func sendEmpty(_ request: URLRequest) async throws {
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.unexpectedResponse(nil)
         }
         
-        guard httpResponse.statusCode == successStatusCode else {
+        if (200...299).contains(httpResponse.statusCode) {
+            return
+        } else {
             do {
                 let errorResponse = try JSONDecoder().decode(ErrorResponse.self, from: data)
                 throw NetworkError.errorResponse(errorResponse)
