@@ -62,7 +62,7 @@ struct AuthService: AuthServiceProtocol {
             SignUpRequest(username: username, password: password)
         )
         
-        let dto: SignUpResponseDTO = try await networkClient.send(request, successStatusCode: 201)
+        let dto: SignUpResponseDTO = try await networkClient.send(request)
         
         return dto.user
     }
