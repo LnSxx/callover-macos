@@ -33,7 +33,7 @@ struct DashboardView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedSection) {
-                Section("Main") {
+                Section() {
                     sidebarItem(.home)
                     sidebarItem(.contacts)
                 }

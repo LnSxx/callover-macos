@@ -16,6 +16,10 @@ private struct ProfileServiceKey: EnvironmentKey {
     static let defaultValue: ProfileServiceProtocol = ProfileService()
 }
 
+private struct AccountServiceKey: EnvironmentKey {
+    static let defaultValue: AccountServiceProtocol = AccountService()
+}
+
 extension EnvironmentValues {
     var authService: AuthServiceProtocol {
         get { self[AuthServiceKey.self] }
@@ -24,5 +28,9 @@ extension EnvironmentValues {
     var profileService: ProfileServiceProtocol {
         get { self[ProfileServiceKey.self] }
         set { self[ProfileServiceKey.self] = newValue }
+    }
+    var accountService: AccountServiceProtocol {
+        get { self[AccountServiceKey.self] }
+        set { self[AccountServiceKey.self] = newValue }
     }
 }

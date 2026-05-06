@@ -10,10 +10,9 @@ import SwiftUI
 struct AccountView: View {
     @EnvironmentObject private var authGateViewModel: AuthGateViewModel
     @Environment(\.authService) var authService
+    @Environment(\.accountService) var accountService
     
     @State private var isShowingDeleteConfirmation = false
-    
-    private func onDeleteAccount() {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -44,7 +43,7 @@ struct AccountView: View {
                     .font(.headline)
                     .foregroundStyle(.red)
 
-                Text("Deleting your account is permanent. Your profile, contacts and local call history will be forever removed.")
+                Text("Deleting your account is permanent. Your profile, contacts, sessions and local call history will be forever removed.")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: 520, alignment: .leading)
 
@@ -59,11 +58,14 @@ struct AccountView: View {
                     isPresented: $isShowingDeleteConfirmation
                 ) {
                     Button("Delete Account", role: .destructive) {
-                        onDeleteAccount()
+                        Task {
+                            try await accountService.deleteAccount()
+                            authGateViewModel.logout()
+                        }
                     }
                     Button("Cancel", role: .cancel) {}
                 } message: {
-                    Text("There is no way to restore your data back.")
+                    Text("There is no way to restore your data back after deleting.")
                 }
             }
 
