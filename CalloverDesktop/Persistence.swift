@@ -9,49 +9,84 @@ import CoreData
 
 struct PersistenceController {
     static let shared = PersistenceController()
-
+    
     @MainActor
     static let preview: PersistenceController = {
-        let result = PersistenceController(inMemory: true)
-        let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+        let controller = PersistenceController(inMemory: true)
+        let context = controller.container.viewContext
+        
+        for index in 0..<10 {
+            let contact = ContactEntity(context: context)
+            contact.id = UUID().uuidString
+            contact.ownerId = "preview-owner-id"
+            contact.contactUserId = "preview-user-\(index)"
+            contact.alias = "Contact \(index + 1)"
+            contact.note = "Preview note"
+            contact.isFavourite = index % 2 == 0
+            contact.isBlocked = false
+            contact.isMuted = false
+            contact.createdAt = Date()
+            contact.updatedAt = Date()
         }
+        
+        let syncState = SyncStateEntity(context: context)
+        syncState.key = "contacts"
+        syncState.lastSyncAt = Date()
+        
         do {
-            try viewContext.save()
+            try context.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            assertionFailure("Unresolved Core Data preview error \(nsError), \(nsError.userInfo)")
         }
-        return result
+        
+        return controller
     }()
-
+    
     let container: NSPersistentContainer
-
+    
+    var viewContext: NSManagedObjectContext {
+        container.viewContext
+    }
+    
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "CalloverDesktop")
+        
         if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
         }
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+        
+        container.loadPersistentStores { _, error in
             if let error = error as NSError? {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-
-                /*
-                 Typical reasons for an error here include:
-                 * The parent directory does not exist, cannot be created, or disallows writing.
-                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                 * The device is out of space.
-                 * The store could not be migrated to the current model version.
-                 Check the error message to determine what the actual problem was.
-                 */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                assertionFailure("Unresolved Core Data error \(error), \(error.userInfo)")
             }
-        })
+        }
+        
         container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        container.viewContext.undoManager = nil
+    }
+    
+    func newBackgroundContext() -> NSManagedObjectContext {
+        let context = container.newBackgroundContext()
+        context.automaticallyMergesChangesFromParent = true
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        context.undoManager = nil
+        return context
+    }
+    
+    func saveViewContext() {
+        let context = container.viewContext
+        
+        guard context.hasChanges else {
+            return
+        }
+        
+        do {
+            try context.save()
+        } catch {
+            let nsError = error as NSError
+            assertionFailure("Failed to save viewContext \(nsError), \(nsError.userInfo)")
+        }
     }
 }

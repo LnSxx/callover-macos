@@ -20,6 +20,18 @@ private struct AccountServiceKey: EnvironmentKey {
     static let defaultValue: AccountServiceProtocol = AccountService()
 }
 
+private struct ContactsServiceKey: EnvironmentKey {
+    static let defaultValue: ContactsServiceProtocol = ContactsService(
+        remoteDataSource: RemoteContactsService(),
+        localDataSource: LocalContactsService(
+            context: PersistenceController.shared.viewContext
+        ),
+        syncStateService: SyncStateService(
+            context: PersistenceController.shared.viewContext
+        ),
+    )
+}
+
 extension EnvironmentValues {
     var authService: AuthServiceProtocol {
         get { self[AuthServiceKey.self] }
@@ -32,5 +44,9 @@ extension EnvironmentValues {
     var accountService: AccountServiceProtocol {
         get { self[AccountServiceKey.self] }
         set { self[AccountServiceKey.self] = newValue }
+    }
+    var contactsService: ContactsServiceProtocol {
+        get { self[ContactsServiceKey.self] }
+        set { self[ContactsServiceKey.self] = newValue }
     }
 }

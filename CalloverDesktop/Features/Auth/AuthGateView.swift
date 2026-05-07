@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AuthGateView: View {
+    @Environment(\.contactsService) var contactsService
     @EnvironmentObject var viewModel: AuthGateViewModel
     
     var body: some View {
@@ -16,7 +17,7 @@ struct AuthGateView: View {
             case .loading:
                 AuthLoadingView()
             case .authenticated(_):
-                DashboardView()
+                AuthenticatedView(contactsService: contactsService)
             case .unauthenticated:
                 UnauthenticatedView()
             }
