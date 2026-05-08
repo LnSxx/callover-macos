@@ -5,9 +5,9 @@ enum DashboardSection: String, CaseIterable, Identifiable {
     case contacts
     case profile
     case account
-
+    
     var id: String { rawValue }
-
+    
     var title: String {
         switch self {
         case .home: "Home"
@@ -16,7 +16,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .account: "Account"
         }
     }
-
+    
     var systemImage: String {
         switch self {
         case .home: "teletype.answer"
@@ -29,7 +29,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
 
 struct DashboardView: View {
     @State private var selectedSection: DashboardSection? = .home
-
+    
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedSection) {
@@ -37,7 +37,7 @@ struct DashboardView: View {
                     sidebarItem(.home)
                     sidebarItem(.contacts)
                 }
-
+                
                 Section("Account") {
                     sidebarItem(.profile)
                     sidebarItem(.account)
@@ -58,7 +58,7 @@ struct DashboardView: View {
             }
         }
     }
-
+    
     private func sidebarItem(_ section: DashboardSection) -> some View {
         Label(section.title, systemImage: section.systemImage)
             .tag(section)
