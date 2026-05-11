@@ -19,3 +19,20 @@ struct ContactDTO: Codable {
     let createdAt: String
     let updatedAt: String
 }
+
+extension ContactDTO {
+    func toDomain() -> Contact {
+        Contact(
+            id: id,
+            ownerId: ownerId,
+            contactUserId: contactUserId,
+            alias: alias,
+            note: note,
+            isFavourite: isFavourite,
+            isBlocked: isBlocked,
+            isMuted: isMuted,
+            createdAt: ISO8601DateFormatter().date(from: createdAt) ?? Date(),
+            updatedAt: ISO8601DateFormatter().date(from: updatedAt) ?? Date(),
+        )
+    }
+}

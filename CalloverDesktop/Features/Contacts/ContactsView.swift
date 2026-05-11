@@ -9,10 +9,12 @@ import SwiftUI
 
 struct ContactsView: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-
+    @Environment(\.contactsService) var contactsService
+    
     @State private var selectedContact: Contact?
     @State private var isShowingInspector = true
-
+    @State private var isShowingAddContact = false
+    
     var body: some View {
         List(selection: $selectedContact) {
             ForEach(viewModel.contacts) { contact in
@@ -22,6 +24,14 @@ struct ContactsView: View {
         }
         .navigationTitle("Contacts")
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    isShowingAddContact = true
+                } label: {
+                    Label("Add Contact", systemImage: "plus")
+                }
+            }
+            
             ToolbarItem {
                 Button {
                     isShowingInspector.toggle()
@@ -29,6 +39,21 @@ struct ContactsView: View {
                     Image(systemName: "sidebar.right")
                 }
             }
+        }
+        .sheet(isPresented: $isShowingAddContact) {
+            AddContactView(
+                contactsService: contactsService,
+                onCancelTap: {
+                    isShowingAddContact = false
+                },
+                onSaved: { contact in
+                    viewModel.insertContact(contact: contact)
+                    
+                    selectedContact = contact
+                    isShowingInspector = true
+                    isShowingAddContact = false
+                }
+            )
         }
         .inspector(isPresented: $isShowingInspector) {
             if let selectedContact {
@@ -54,13 +79,9 @@ struct ContactsView: View {
 }
 
 #Preview {
-    let remoteDataSource = RemoteContactsService()
-    let localDataSource = LocalContactsService(context: PersistenceController.shared.viewContext)
-    let syncState = SyncStateService(context: PersistenceController.shared.viewContext)
-    let service = ContactsService(
-        remoteDataSource: remoteDataSource, localDataSource: localDataSource, syncStateService: syncState
-    )
+    let service = MockContactsService()
     let viewModel = ContactsViewModel(service: service)
     ContactsView()
         .environmentObject(viewModel)
+        .environment(\.contactsService, service)
 }

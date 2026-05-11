@@ -33,7 +33,7 @@ struct ContactListRow: View {
                     }
                     
                     if contact.isBlocked {
-                        Image(systemName: "hand.raised.fill")
+                        Image(systemName: "nosign")
                             .font(.caption2)
                             .foregroundStyle(.red)
                     }

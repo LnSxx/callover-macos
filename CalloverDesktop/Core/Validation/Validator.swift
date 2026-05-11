@@ -78,4 +78,26 @@ enum Validator {
         
         return .success(())
     }
+    
+    static func validateNewContactUserId(_ userId: String) -> Result<Void, ValidationError> {
+        let trimmed = userId.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return .failure(.fieldEmpty)
+        }
+        
+        return .success(())
+    }
+    
+    static func validateNewContactName(_ name: String) -> Result<Void, ValidationError> {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return .failure(.fieldEmpty)
+        }
+        
+        if trimmed.count > 80 {
+            return .failure(.tooLong(max: 80))
+        }
+        
+        return .success(())
+    }
 }

@@ -10,6 +10,12 @@ import Foundation
 protocol ContactsServiceProtocol {
     func loadLocalContacts() async throws -> [Contact]
     func syncContacts() async throws
+    func isContactExistsLocally(userId: String) async throws -> Bool
+    func createContact(
+        userId: String,
+        name: String,
+        isAddingToFavourites: Bool,
+    ) async throws -> Contact
 }
 
 class ContactsService: ContactsServiceProtocol {
@@ -49,6 +55,24 @@ class ContactsService: ContactsServiceProtocol {
         }
         
         try await syncStateService.setLastSyncAt(key: "contacts", date: Date())
+    }
+    
+    func isContactExistsLocally(userId: String) async throws -> Bool {
+        try await localDataSource.getContactByUserId(userId: userId) != nil
+    }
+    
+    func createContact(
+        userId: String,
+        name: String,
+        isAddingToFavourites: Bool,
+    ) async throws -> Contact {
+        let createdContactDto = try await remoteDataSource.createContact(
+            contactUserId: userId,
+            name: name,
+            isAddingToFavourites: isAddingToFavourites
+        )
+        try await localDataSource.upsertContact(createdContactDto)
+        return createdContactDto.toDomain()
     }
 }
 

@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 
 protocol LocalContactsServiceProtocol {
+    func getContactByUserId(userId: String) async throws -> Contact?
     func fetchContacts() async throws -> [Contact]
     func upsertContacts(_ contacts: [ContactDTO]) async throws
     func upsertContact(_ contact: ContactDTO) async throws
@@ -22,6 +23,16 @@ class LocalContactsService: LocalContactsServiceProtocol {
     
     init(context: NSManagedObjectContext) {
         self.context = context
+    }
+    
+    func getContactByUserId(userId: String) async throws -> Contact? {
+        try await context.perform {
+            let request: NSFetchRequest<ContactEntity> = ContactEntity.fetchRequest()
+            request.predicate = NSPredicate(format: "contactUserId == %@", userId)
+            request.fetchLimit = 1
+            
+            return try self.context.fetch(request).first?.toDomain()
+        }
     }
     
     func fetchContacts() async throws -> [Contact] {

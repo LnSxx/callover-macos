@@ -46,11 +46,6 @@ final class RegisterViewModel: ObservableObject {
             state.passwordError = error.errorDescription
         }
         
-        if state.usernameError != nil || state.passwordError != nil {
-            state.submitError = "Please check provided data"
-            return false
-        }
-        
         if !state.isAcceptedTerms {
             state.submitError = "Make sure you've read Privacy Policy and accepted Terms & Conditions"
             return false
@@ -92,6 +87,8 @@ final class RegisterViewModel: ObservableObject {
                 state.usernameError = error.code.message
             case .password:
                 state.passwordError = error.code.message
+            default:
+                return
             }
         }
     }

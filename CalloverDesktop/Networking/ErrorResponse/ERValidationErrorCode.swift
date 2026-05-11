@@ -24,6 +24,12 @@ enum ERValidationErrorCode: String, Codable {
     case PASSWORD_TOO_BIG
     case PASSWORD_EDGE_WHITESPACE
     case PASSWORD_HAS_CONTROLS
+    
+    // Contact user ID validation errors
+    case CONTACT_UID_INVALID
+    
+    // Contact name validation errors
+    case CONTACT_NAME_TOO_BIG
 }
 
 extension ERValidationErrorCode {
@@ -56,6 +62,12 @@ extension ERValidationErrorCode {
             return "Remove edge whitespaces from password"
         case .PASSWORD_HAS_CONTROLS:
             return "Remove controls from password"
+            
+        case .CONTACT_UID_INVALID:
+            return "Contact user ID is invalid"
+            
+        case .CONTACT_NAME_TOO_BIG:
+            return "Contact name is invalid"
         }
     }
 }

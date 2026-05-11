@@ -21,11 +21,9 @@ struct RegisterView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // Title with text (example: "Sign in to Callover")
             Text("Create account in Callover")
                 .font(.largeTitle)
             
-            // From fields
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     TextField("Username", text: $registerViewModel.state.username)

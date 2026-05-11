@@ -82,6 +82,8 @@ class LoginViewModel: ObservableObject {
                 state.usernameError = error.code.message
             case .password:
                 state.passwordError = error.code.message
+            default:
+                return
             }
         }
     }

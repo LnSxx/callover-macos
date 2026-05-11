@@ -8,6 +8,12 @@
 import Foundation
 
 protocol RemoteContactsServiceProtocol {
+    func createContact(
+        contactUserId: String,
+        name: String,
+        isAddingToFavourites: Bool,
+    ) async throws -> ContactDTO
+    
     func fetchContacts(
         changedAfter: Date?,
         cursor: String?,
@@ -24,6 +30,31 @@ class RemoteContactsService: RemoteContactsServiceProtocol {
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
     }()
+    
+    func createContact(
+        contactUserId: String,
+        name: String,
+        isAddingToFavourites: Bool,
+    ) async throws -> ContactDTO {
+        guard let url = URL(string: "\(baseURL)/contacts") else {
+            throw NetworkError.invalidUrl
+        }
+        
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.httpBody = try JSONEncoder().encode(
+            CreateContactRequestDTO(
+                contactUserId: contactUserId,
+                alias: name,
+                isFavourite: isAddingToFavourites
+            )
+        )
+        
+        return try await networkClient.send(request)
+    }
     
     func fetchContacts(
         changedAfter: Date?,
