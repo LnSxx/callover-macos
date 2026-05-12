@@ -7,154 +7,120 @@
 
 import SwiftUI
 
-private enum ContactsFilter: String, CaseIterable, Identifiable {
-    case all = "All"
-    case favourites = "Favourites"
-
-    var id: Self { self }
-}
-
 struct ContactsView: View {
-    @EnvironmentObject private var contactsViewModel: ContactsViewModel
-    @Environment(\.contactsService) private var contactsService
-
+    @EnvironmentObject var contactsViewModel: ContactsViewModel
+    @Environment(\.contactsService) var contactsService
+    
     @State private var selectedContact: Contact?
     @State private var isShowingInspector = true
     @State private var isShowingAddContact = false
-    @State private var filter: ContactsFilter = .all
     @State private var searchText = ""
-
+    
+    private func onCreateContact(contact: Contact) {
+        contactsViewModel.upsertContact(contact: contact)
+        
+        selectedContact = contact
+        isShowingInspector = true
+        isShowingAddContact = false
+    }
+    
+    private func onContactUpdate(contact: Contact) {
+        contactsViewModel.upsertContact(contact: contact)
+        selectedContact = contact
+        isShowingInspector = true
+    }
+    
+    private func onContactDelete(contact: Contact) {
+        contactsViewModel.deleteContact(id: contact.id)
+        selectedContact = nil
+        isShowingInspector = false
+    }
+    
     private var visibleContacts: [Contact] {
-        contactsViewModel.contacts
-            .filter(matchesFilter)
-            .filter(matchesSearch)
+        var contacts = contactsViewModel.contacts
+        
+        if !searchText.isEmpty {
+            contacts = contacts.filter {
+                let alias = $0.alias ?? ""
+                let userId = $0.contactUserId
+                
+                return alias.localizedCaseInsensitiveContains(searchText)
+                || userId.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        
+        return contacts
     }
-
+    
     var body: some View {
-        contactsList
-            .navigationTitle("Contacts")
-            .searchable(
-                text: $searchText,
-                placement: .sidebar,
-                prompt: "Search contacts"
-            )
-            .toolbar {
-                leadingToolbarItems
-                trailingToolbarItems
-            }
-            .sheet(isPresented: $isShowingAddContact) {
-                addContactSheet
-            }
-            .inspector(isPresented: $isShowingInspector) {
-                inspectorContent
-            }
-    }
-}
-
-private extension ContactsView {
-    var contactsList: some View {
         List(selection: $selectedContact) {
             ForEach(visibleContacts) { contact in
                 ContactListRow(contact: contact)
                     .tag(contact)
             }
         }
-    }
-
-    var leadingToolbarItems: some ToolbarContent {
-        ToolbarItemGroup(placement: .navigation) {
-            Picker("Filter", selection: $filter) {
-                ForEach(ContactsFilter.allCases) { filter in
-                    Text(filter.rawValue).tag(filter)
+        .searchable(
+            text: $searchText,
+            placement: .sidebar,
+            prompt: "Search contacts"
+        )
+        .navigationTitle("Contacts")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    isShowingAddContact = true
+                } label: {
+                    Label("Add Contact", systemImage: "plus")
                 }
             }
-            .pickerStyle(.segmented)
-            .frame(width: 180)
-
-            Button {
-                isShowingAddContact = true
-            } label: {
-                Label("Add Contact", systemImage: "plus")
+            
+            ToolbarItem {
+                Button {
+                    isShowingInspector.toggle()
+                } label: {
+                    Image(systemName: "sidebar.right")
+                }
             }
         }
-    }
-
-    var trailingToolbarItems: some ToolbarContent {
-        ToolbarItem(placement: .primaryAction) {
-            Button {
-                isShowingInspector.toggle()
-            } label: {
-                Image(systemName: "sidebar.right")
+        .sheet(isPresented: $isShowingAddContact) {
+            AddContactView(
+                contactsService: contactsService,
+                onCancelTap: {
+                    isShowingAddContact = false
+                },
+                onSaved: { contact in
+                    onCreateContact(contact: contact)
+                }
+            )
+        }
+        .inspector(isPresented: $isShowingInspector) {
+            if let selectedContact {
+                ContactInfo(
+                    contact: selectedContact,
+                    onUpdate: { contact in
+                        onContactUpdate(contact: contact)
+                    },
+                    onDelete: { contact in
+                        onContactDelete(contact: contact)
+                    },
+                )
+                .inspectorColumnWidth(
+                    min: 320,
+                    ideal: 320,
+                    max: 500
+                )
+            } else {
+                ContentUnavailableView(
+                    "No Contact Selected",
+                    systemImage: "person.crop.circle"
+                )
+                .inspectorColumnWidth(
+                    min: 320,
+                    ideal: 320,
+                    max: 500
+                )
             }
         }
-    }
-
-    var addContactSheet: some View {
-        AddContactView(
-            contactsService: contactsService,
-            onCancelTap: {
-                isShowingAddContact = false
-            },
-            onSaved: onCreateContact
-        )
-    }
-
-    @ViewBuilder
-    var inspectorContent: some View {
-        if let selectedContact {
-            ContactInfo(
-                contact: selectedContact,
-                onUpdate: onContactUpdate,
-                onDelete: onContactDelete
-            )
-            .inspectorColumnWidth(min: 320, ideal: 320, max: 500)
-        } else {
-            ContentUnavailableView(
-                "No Contact Selected",
-                systemImage: "person.crop.circle"
-            )
-            .inspectorColumnWidth(min: 320, ideal: 320, max: 500)
-        }
-    }
-
-    func matchesFilter(_ contact: Contact) -> Bool {
-        switch filter {
-        case .all:
-            return true
-        case .favourites:
-            return contact.isFavourite
-        }
-    }
-
-    func matchesSearch(_ contact: Contact) -> Bool {
-        guard !searchText.isEmpty else {
-            return true
-        }
-
-        let alias = contact.alias ?? ""
-        let userId = contact.contactUserId
-
-        return alias.localizedCaseInsensitiveContains(searchText)
-            || userId.localizedCaseInsensitiveContains(searchText)
-    }
-
-    func onCreateContact(_ contact: Contact) {
-        contactsViewModel.upsertContact(contact: contact)
-        selectedContact = contact
-        isShowingInspector = true
-        isShowingAddContact = false
-    }
-
-    func onContactUpdate(_ contact: Contact) {
-        contactsViewModel.upsertContact(contact: contact)
-        selectedContact = contact
-        isShowingInspector = true
-    }
-
-    func onContactDelete(_ contact: Contact) {
-        contactsViewModel.deleteContact(id: contact.id)
-        selectedContact = nil
-        isShowingInspector = false
     }
 }
 
