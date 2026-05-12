@@ -8,17 +8,20 @@
 import Foundation
 
 protocol RemoteContactsServiceProtocol {
-    func createContact(
-        contactUserId: String,
-        name: String,
-        isAddingToFavourites: Bool,
-    ) async throws -> ContactDTO
+    func createContact(dto: CreateContactRequestDTO) async throws -> ContactDTO
     
     func fetchContacts(
         changedAfter: Date?,
         cursor: String?,
         limit: Int
     ) async throws -> FindContactsResponseDTO
+    
+    func updateContact(
+        id: String,
+        dto: UpdateContactRequestDTO,
+    ) async throws -> ContactDTO
+    
+    func deleteContact(id: String) async throws -> Void
 }
 
 class RemoteContactsService: RemoteContactsServiceProtocol {
@@ -31,11 +34,7 @@ class RemoteContactsService: RemoteContactsServiceProtocol {
         return formatter
     }()
     
-    func createContact(
-        contactUserId: String,
-        name: String,
-        isAddingToFavourites: Bool,
-    ) async throws -> ContactDTO {
+    func createContact(dto: CreateContactRequestDTO) async throws -> ContactDTO {
         guard let url = URL(string: "\(baseURL)/contacts") else {
             throw NetworkError.invalidUrl
         }
@@ -45,13 +44,7 @@ class RemoteContactsService: RemoteContactsServiceProtocol {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.httpBody = try JSONEncoder().encode(
-            CreateContactRequestDTO(
-                contactUserId: contactUserId,
-                alias: name,
-                isFavourite: isAddingToFavourites
-            )
-        )
+        request.httpBody = try JSONEncoder().encode(dto)
         
         return try await networkClient.send(request)
     }
@@ -96,5 +89,33 @@ class RemoteContactsService: RemoteContactsServiceProtocol {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         
         return try await networkClient.send(request)
+    }
+    
+    func updateContact(
+        id: String,
+        dto: UpdateContactRequestDTO,
+    ) async throws -> ContactDTO {
+        guard let url = URL(string: "\(baseURL)/contacts/\(id)") else {
+            throw NetworkError.invalidUrl
+        }
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "PATCH"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.httpBody = try JSONEncoder().encode(dto)
+        
+        return try await networkClient.send(request)
+    }
+    
+    func deleteContact(id: String) async throws {
+        guard let url = URL(string: "\(baseURL)/contacts/\(id)") else {
+            throw NetworkError.invalidUrl
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        
+        try await networkClient.sendEmpty(request)
     }
 }

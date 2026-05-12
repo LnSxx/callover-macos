@@ -24,18 +24,14 @@ final class MockContactsService: ContactsServiceProtocol {
         return contacts.first(where: { $0.contactUserId == userId }) != nil
     }
     
-    func createContact(
-        userId: String,
-        name: String,
-        isAddingToFavourites: Bool,
-    ) async throws -> Contact {
+    func createContact(params: CreateContactParams) async throws -> Contact {
         let contact = Contact(
             id: UUID().uuidString,
             ownerId: "mock-owner-id",
-            contactUserId: userId,
-            alias: name,
+            contactUserId: params.userId,
+            alias: params.name,
             note: nil,
-            isFavourite: isAddingToFavourites,
+            isFavourite: params.isAddingToFavourites ?? false,
             isBlocked: false,
             isMuted: false,
             createdAt: Date(),
@@ -45,6 +41,39 @@ final class MockContactsService: ContactsServiceProtocol {
         contacts.insert(contact, at: 0)
         
         return contact
+    }
+    
+    func updateContact(params: UpdateContactParams) async throws -> Contact {
+        guard let index = contacts.firstIndex(where: { $0.id == params.id }) else {
+            throw MockContactsServiceError.contactNotFound
+        }
+        
+        let oldContact = contacts[index]
+        
+        let updatedContact = Contact(
+            id: oldContact.id,
+            ownerId: oldContact.ownerId,
+            contactUserId: oldContact.contactUserId,
+            alias: params.newName ?? oldContact.alias,
+            note: params.newNote ?? oldContact.note,
+            isFavourite: params.isFavourite ?? oldContact.isFavourite,
+            isBlocked: params.isBlocked ?? oldContact.isBlocked,
+            isMuted: params.isMuted ?? oldContact.isMuted,
+            createdAt: oldContact.createdAt,
+            updatedAt: Date()
+        )
+        
+        contacts[index] = updatedContact
+        
+        return updatedContact
+    }
+    
+    func deleteContact(id: String) async throws {
+        guard contacts.contains(where: { $0.id == id }) else {
+            throw MockContactsServiceError.contactNotFound
+        }
+        
+        contacts.removeAll { $0.id == id }
     }
 }
 
@@ -87,4 +116,15 @@ extension MockContactsService {
             updatedAt: Date()
         )
     ]
+}
+
+enum MockContactsServiceError: LocalizedError {
+    case contactNotFound
+    
+    var errorDescription: String? {
+        switch self {
+        case .contactNotFound:
+            return "Contact not found."
+        }
+    }
 }

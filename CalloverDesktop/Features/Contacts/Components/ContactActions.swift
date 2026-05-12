@@ -8,12 +8,62 @@
 import SwiftUI
 
 struct ContactActions: View {
+    @Environment(\.contactsService) var contactsService
+    @State private var actionErrorMessage: String?
+    @State private var isShowingDeleteConfirmation = false
+    
     private let contact: Contact
-
-    init(contact: Contact) {
+    let onUpdate: (Contact) -> Void
+    let onDelete: (Contact) -> Void
+    
+    init(
+        contact: Contact,
+        onUpdate: @escaping (Contact) -> Void,
+        onDelete: @escaping (Contact) -> Void,
+    ) {
         self.contact = contact
+        self.onUpdate = onUpdate
+        self.onDelete = onDelete
     }
-
+    
+    private func setActionErrorMessage() {
+        actionErrorMessage = "Failed to complete action. Please try again later."
+    }
+    
+    private func clearActionErrorMessage() {
+        actionErrorMessage = nil
+    }
+    
+    private func updateContact(_ params: UpdateContactParams) {
+        Task {
+            do {
+                clearActionErrorMessage()
+                
+                let updatedContact = try await contactsService.updateContact(
+                    params: params
+                )
+                
+                onUpdate(updatedContact)
+            } catch {
+                setActionErrorMessage()
+            }
+        }
+    }
+    
+    private func deleteContact() {
+        Task {
+            do {
+                clearActionErrorMessage()
+                
+                try await contactsService.deleteContact(id: contact.id)
+                
+                onDelete(contact)
+            } catch {
+                setActionErrorMessage()
+            }
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(spacing: 0) {
@@ -25,11 +75,16 @@ struct ContactActions: View {
                     ? "star.slash.fill"
                     : "star.fill"
                 ) {
-                    // TODO: Handle favourite action
+                    updateContact(
+                        UpdateContactParams(
+                            id: contact.id,
+                            isFavourite: !contact.isFavourite
+                        )
+                    )
                 }
-
+                
                 Divider()
-
+                
                 actionButton(
                     title: contact.isMuted
                     ? "Unmute"
@@ -38,11 +93,16 @@ struct ContactActions: View {
                     ? "bell.fill"
                     : "bell.slash.fill"
                 ) {
-                    // TODO: Handle mute action
+                    updateContact(
+                        UpdateContactParams(
+                            id: contact.id,
+                            isMuted: !contact.isMuted
+                        )
+                    )
                 }
-
+                
                 Divider()
-
+                
                 actionButton(
                     title: contact.isBlocked
                     ? "Unblock"
@@ -51,7 +111,12 @@ struct ContactActions: View {
                     ? "nosign"
                     : "nosign"
                 ) {
-                    // TODO: Handle block action
+                    updateContact(
+                        UpdateContactParams(
+                            id: contact.id,
+                            isBlocked: !contact.isBlocked
+                        )
+                    )
                 }
             }
             .background(.regularMaterial)
@@ -61,14 +126,20 @@ struct ContactActions: View {
                     style: .continuous
                 )
             )
-
+            
+            if let actionErrorMessage {
+                Text(actionErrorMessage)
+                    .font(.callout)
+                    .foregroundStyle(.red)
+            }
+            
             VStack(spacing: 0) {
                 actionButton(
                     title: "Delete contact",
                     systemImage: "trash",
                     role: .destructive
                 ) {
-                    // TODO: Handle delete
+                    isShowingDeleteConfirmation = true
                 }
             }
             .background(.regularMaterial)
@@ -78,9 +149,21 @@ struct ContactActions: View {
                     style: .continuous
                 )
             )
+            .confirmationDialog(
+                "Delete Contact?",
+                isPresented: $isShowingDeleteConfirmation
+            ) {
+                Button("Delete contact", role: .destructive) {
+                    deleteContact()
+                }
+                
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Are you sure you want to delete this contact?")
+            }
         }
     }
-
+    
     private func actionButton(
         title: String,
         systemImage: String,
@@ -96,14 +179,14 @@ struct ContactActions: View {
                         : .secondary
                     )
                     .frame(width: 18)
-
+                
                 Text(title)
                     .foregroundStyle(
                         role == .destructive
                         ? .red
                         : .primary
                     )
-
+                
                 Spacer()
             }
             .padding(.horizontal, 16)
@@ -115,20 +198,28 @@ struct ContactActions: View {
 }
 
 #Preview {
+    let service = MockContactsService()
+    let viewModel = ContactsViewModel(service: service)
     let contact = Contact(
-        id: "id",
-        ownerId: "owner-id",
-        contactUserId: "contact-user-id",
-        alias: "My best friend",
-        note: "Some note",
+        id: "contact-2",
+        ownerId: "owner-1",
+        contactUserId: "user-2",
+        alias: "Catherine II the Great",
+        note: "Empress of Russia",
         isFavourite: false,
         isBlocked: false,
-        isMuted: false,
+        isMuted: true,
         createdAt: Date(),
         updatedAt: Date()
     )
-
-    ContactActions(contact: contact)
-        .padding()
-        .frame(width: 340)
+    
+    ContactActions(
+        contact: contact,
+        onUpdate: { _ in },
+        onDelete: { _ in }
+    )
+    .padding()
+    .frame(width: 340)
+    .environmentObject(viewModel)
+    .environment(\.contactsService, service)
 }

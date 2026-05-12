@@ -10,4 +10,5 @@ enum ValidationField: String, Codable {
     case password
     case contactUserId
     case alias
+    case note
 }

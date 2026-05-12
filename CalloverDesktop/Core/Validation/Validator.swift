@@ -100,4 +100,14 @@ enum Validator {
         
         return .success(())
     }
+    
+    static func validateContactNote(_ name: String) -> Result<Void, ValidationError> {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if trimmed.count > 500 {
+            return .failure(.tooLong(max: 500))
+        }
+        
+        return .success(())
+    }
 }

@@ -45,11 +45,18 @@ final class ContactsViewModel: ObservableObject {
         }
     }
     
-    func insertContact(contact: Contact) {
+    func upsertContact(contact: Contact) {
         contacts.removeAll { $0.id == contact.id }
         
         contacts.append(contact)
         
+        contacts.sort {
+            $0.alias?.localizedCaseInsensitiveCompare($1.alias ?? $1.contactUserId) == .orderedAscending
+        }
+    }
+    
+    func deleteContact(id: String) {
+        contacts.removeAll { $0.id == id }
         contacts.sort {
             $0.alias?.localizedCaseInsensitiveCompare($1.alias ?? $1.contactUserId) == .orderedAscending
         }

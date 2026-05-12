@@ -8,10 +8,20 @@
 import SwiftUI
 
 struct ContactDetails: View {
-    private let contact: Contact
+    @Environment(\.contactsService) private var contactsService
     
-    init(contact: Contact) {
+    @State private var isShowingEditName = false
+    @State private var isShowingEditNote = false
+    
+    private let contact: Contact
+    let onUpdate: (Contact) -> Void
+    
+    init(
+        contact: Contact,
+        onUpdate: @escaping (Contact) -> Void,
+    ) {
         self.contact = contact
+        self.onUpdate = onUpdate
     }
     
     var body: some View {
@@ -21,12 +31,50 @@ struct ContactDetails: View {
                 
                 Divider()
                 
-                InfoRow(title: "Alias", value: contact.alias ?? "No alias")
+                EditableInfoRow(
+                    title: "Name",
+                    value: contact.alias ?? "",
+                    helpText: "Edit name",
+                ) {
+                    isShowingEditName = true
+                }
                 
                 Divider()
                 
-                InfoRow(title: "Note", value: contact.note ?? "")
+                EditableInfoRow(
+                    title: "Note",
+                    value: contact.note ?? "",
+                    helpText: "Edit note",
+                ) {
+                    isShowingEditNote = true
+                }
             }
+        }
+        .sheet(isPresented: $isShowingEditName) {
+            EditContactNameView(
+                contactsService: contactsService,
+                contact: contact,
+                onCancelTap: {
+                    isShowingEditName = false
+                },
+                onUpdate: { updatedContact in
+                    onUpdate(updatedContact)
+                    isShowingEditName = false
+                }
+            )
+        }
+        .sheet(isPresented: $isShowingEditNote) {
+            EditContactNoteView(
+                contactsService: contactsService,
+                contact: contact,
+                onCancelTap: {
+                    isShowingEditNote = false
+                },
+                onUpdate: { updatedContact in
+                    onUpdate(updatedContact)
+                    isShowingEditNote = false
+                }
+            )
         }
     }
 }
@@ -63,7 +111,41 @@ private struct InfoRow: View {
     }
 }
 
+private struct EditableInfoRow: View {
+    let title: String
+    let value: String
+    let helpText: String
+    let onEditTap: () -> Void
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+                
+                Text(value)
+                    .font(.body)
+                    .textSelection(.enabled)
+            }
+            
+            Spacer()
+            
+            Button {
+                onEditTap()
+            } label: {
+                Image(systemName: "pencil")
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help(helpText)
+        }
+    }
+}
+
 #Preview {
+    let service = MockContactsService()
     let contact = Contact(
         id: "id",
         ownerId: "owner-id",
@@ -76,5 +158,9 @@ private struct InfoRow: View {
         createdAt: Date(),
         updatedAt: Date(),
     )
-    ContactDetails(contact: contact)
+    ContactDetails(
+        contact: contact,
+        onUpdate: {_ in }
+    )
+    .environment(\.contactsService, service)
 }

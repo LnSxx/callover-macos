@@ -7,15 +7,28 @@
 
 import Foundation
 
+struct CreateContactParams {
+    let userId: String
+    let name: String
+    let isAddingToFavourites: Bool?
+}
+
+struct UpdateContactParams {
+    var id: String
+    var newName: String?
+    var newNote: String?
+    var isFavourite: Bool?
+    var isMuted: Bool?
+    var isBlocked: Bool?
+}
+
 protocol ContactsServiceProtocol {
     func loadLocalContacts() async throws -> [Contact]
     func syncContacts() async throws
     func isContactExistsLocally(userId: String) async throws -> Bool
-    func createContact(
-        userId: String,
-        name: String,
-        isAddingToFavourites: Bool,
-    ) async throws -> Contact
+    func createContact(params: CreateContactParams) async throws -> Contact
+    func updateContact(params: UpdateContactParams) async throws -> Contact
+    func deleteContact(id: String) async throws -> Void
 }
 
 class ContactsService: ContactsServiceProtocol {
@@ -61,18 +74,38 @@ class ContactsService: ContactsServiceProtocol {
         try await localDataSource.getContactByUserId(userId: userId) != nil
     }
     
-    func createContact(
-        userId: String,
-        name: String,
-        isAddingToFavourites: Bool,
-    ) async throws -> Contact {
+    func createContact(params: CreateContactParams) async throws -> Contact {
+        let requestDto = CreateContactRequestDTO(
+            contactUserId: params.userId,
+            alias: params.name,
+            isFavourite: params.isAddingToFavourites
+        )
         let createdContactDto = try await remoteDataSource.createContact(
-            contactUserId: userId,
-            name: name,
-            isAddingToFavourites: isAddingToFavourites
+            dto: requestDto,
         )
         try await localDataSource.upsertContact(createdContactDto)
         return createdContactDto.toDomain()
+    }
+    
+    func updateContact(params: UpdateContactParams) async throws -> Contact {
+        let requestDto = UpdateContactRequestDTO(
+            alias: params.newName,
+            note: params.newNote,
+            isFavourite: params.isFavourite,
+            isBlocked: params.isBlocked,
+            isMuted: params.isMuted,
+        )
+        let updatedContactDto = try await remoteDataSource.updateContact(
+            id: params.id,
+            dto: requestDto,
+        )
+        try await localDataSource.upsertContact(updatedContactDto)
+        return updatedContactDto.toDomain()
+    }
+    
+    func deleteContact(id: String) async throws {
+        try await remoteDataSource.deleteContact(id: id)
+        try await localDataSource.deleteContact(id: id)
     }
 }
 

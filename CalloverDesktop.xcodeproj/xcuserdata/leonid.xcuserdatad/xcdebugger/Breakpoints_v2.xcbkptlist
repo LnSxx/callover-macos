@@ -110,8 +110,8 @@
             filePath = "CalloverDesktop/Core/Services/Contacts/ContactsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
             landmarkName = "syncContacts()"
             landmarkType = "7">
          </BreakpointContent>
@@ -126,8 +126,8 @@
             filePath = "CalloverDesktop/Core/Services/Contacts/RemoteContacts/RemoteContactsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
             landmarkName = "fetchContacts(changedAfter:cursor:limit:)"
             landmarkType = "7">
          </BreakpointContent>

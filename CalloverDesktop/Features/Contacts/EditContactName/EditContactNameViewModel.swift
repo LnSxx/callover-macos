@@ -1,57 +1,53 @@
 //
-//  AddContactViewModel.swift
+//  EditContactNameViewModel.swift
 //  CalloverDesktop
 //
-//  Created by Leonid  on 11.05.26.
+//  Created by Leonid  on 12.05.26.
 //
 
 import Foundation
 import Combine
 
-struct AddContactFormState {
-    var userId = ""
+struct EditContactNameFormState {
     var name = ""
     
-    var userIdError: String?
     var nameError: String?
-    var isAddingToFavourites = false
     var submitError: String?
     var isLoading = false
 }
 
 @MainActor
-final class AddContactViewModel: ObservableObject {
-    @Published var state = AddContactFormState()
+final class EditContactNameViewModel: ObservableObject {
+    @Published var state = EditContactNameFormState()
     
     private let contactsService: ContactsServiceProtocol
-//    private let onSaved: (Contact) -> Void
+    private let contact: Contact
     
     init(
         contactsService: ContactsServiceProtocol,
-//        onSaved: @escaping (Contact) -> Void
+        contact: Contact,
     ) {
         self.contactsService = contactsService
-//        self.onSaved = onSaved
-    }
-    
-    func toggleAddingToFavourites() {
-        state.isAddingToFavourites.toggle()
+        self.contact = contact
+        state.name = contact.alias ?? ""
     }
     
     private func validateForm() -> Bool {
-        state.userIdError = nil
         state.nameError = nil
         state.submitError = nil
 
-        if case .failure(let error) = Validator.validateNewContactUserId(state.userId) {
-            state.userIdError = error.errorDescription
+        let trimmedName = state.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let currentName = contact.alias?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        if currentName == trimmedName {
+            state.nameError = "New name is the same as the current name"
         }
 
-        if case .failure(let error) = Validator.validateNewContactName(state.name) {
+        if case .failure(let error) = Validator.validateNewContactName(trimmedName) {
             state.nameError = error.errorDescription
         }
 
-        return state.userIdError == nil && state.nameError == nil
+        return state.nameError == nil
     }
     
     private func apply(_ error: NetworkError) {
@@ -65,8 +61,6 @@ final class AddContactViewModel: ObservableObject {
     
     private func apply(_ response: ErrorResponse) {
         switch response.code {
-        case .CONFLICT:
-            state.userIdError = "Contact already exists"
         case .VALIDATION_ERROR:
             guard let errors = response.errors else {
                 setDefaultSubmitErrorMessage()
@@ -83,12 +77,10 @@ final class AddContactViewModel: ObservableObject {
     private func applyValidationErrors(_ errors: [ERValidationError]) {
         for error in errors {
             switch error.field {
-            case .contactUserId:
-                state.userIdError = error.code.message
             case .alias:
                 state.nameError = error.code.message
             default:
-                return
+                continue
             }
         }
     }
@@ -106,33 +98,18 @@ final class AddContactViewModel: ObservableObject {
             return nil
         }
         
-        let userContactId = state.userId
-        let name = state.name
-        let isAddingToFavourites = state.isAddingToFavourites
-        
-        do {
-            let exists = try await contactsService.isContactExistsLocally(userId: userContactId)
-
-            if exists {
-                state.userIdError = "Contact already exists"
-                return nil
-            }
-        } catch {
-            setDefaultSubmitErrorMessage()
-            return nil
-        }
+        let name = state.name.trimmingCharacters(in: .whitespacesAndNewlines)
         
         state.isLoading = true
         state.submitError = nil
         
         defer { state.isLoading = false }
         do {
-            let params = CreateContactParams(
-                userId: userContactId,
-                name: name,
-                isAddingToFavourites: isAddingToFavourites
+            let params = UpdateContactParams(
+                id: contact.id,
+                newName: name,
             )
-            return try await contactsService.createContact(params: params)
+            return try await contactsService.updateContact(params: params)
         } catch let error as NetworkError {
             apply(error)
             return nil

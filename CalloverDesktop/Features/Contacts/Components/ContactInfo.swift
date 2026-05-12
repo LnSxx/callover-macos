@@ -9,9 +9,17 @@ import SwiftUI
 
 struct ContactInfo: View {
     private let contact: Contact
+    let onUpdate: (Contact) -> Void
+    let onDelete: (Contact) -> Void
     
-    init(contact: Contact) {
+    init(
+        contact: Contact,
+        onUpdate: @escaping (Contact) -> Void,
+        onDelete: @escaping (Contact) -> Void,
+    ) {
         self.contact = contact
+        self.onUpdate = onUpdate
+        self.onDelete = onDelete
     }
     
     var body: some View {
@@ -35,20 +43,18 @@ struct ContactInfo: View {
                     )
                 }
                 
-                ContactDetails(contact: contact)
+                ContactDetails(
+                    contact: contact,
+                    onUpdate: onUpdate,
+                )
                 
-                ContactActions(contact: contact)
+                ContactActions(
+                    contact: contact,
+                    onUpdate: onUpdate,
+                    onDelete: onDelete,
+                )
             }
             .padding(32)
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    
-                } label: {
-                    Label("Edit", systemImage: "pencil")
-                }
-            }
         }
     }
     
@@ -99,5 +105,9 @@ struct ContactInfo: View {
         createdAt: Date(),
         updatedAt: Date(),
     )
-    ContactInfo(contact: contact)
+    ContactInfo(
+        contact: contact,
+        onUpdate: {_ in },
+        onDelete: {_ in },
+    )
 }

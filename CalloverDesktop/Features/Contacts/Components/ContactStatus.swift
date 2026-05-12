@@ -19,7 +19,7 @@ struct ContactStatus: View {
     }
     
     var body: some View {
-        HStack(spacing: 5) {
+        VStack(spacing: 5) {
             if isFavourite {
                 ContactStatusBadge(
                     title: "FAVOURITE",
