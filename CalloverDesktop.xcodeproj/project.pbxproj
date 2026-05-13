@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B3F576AA2FB3FAD600853450 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = B3F576A92FB3FAD600853450 /* SocketIO */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		B37D5C822F8CCDA200A3E3E7 /* CalloverDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CalloverDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3F576AA2FB3FAD600853450 /* SocketIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,7 @@
 			);
 			name = CalloverDesktop;
 			packageProductDependencies = (
+				B3F576A92FB3FAD600853450 /* SocketIO */,
 			);
 			productName = CalloverDesktop;
 			productReference = B37D5C822F8CCDA200A3E3E7 /* CalloverDesktop.app */;
@@ -114,6 +120,9 @@
 			);
 			mainGroup = B37D5C792F8CCDA200A3E3E7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B3F576A82FB3FAD600853450 /* XCRemoteSwiftPackageReference "socket" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B37D5C832F8CCDA200A3E3E7 /* Products */;
 			projectDirPath = "";
@@ -385,6 +394,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B3F576A82FB3FAD600853450 /* XCRemoteSwiftPackageReference "socket" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B3F576A92FB3FAD600853450 /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B3F576A82FB3FAD600853450 /* XCRemoteSwiftPackageReference "socket" */;
+			productName = SocketIO;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B37D5C7A2F8CCDA200A3E3E7 /* Project object */;
 }

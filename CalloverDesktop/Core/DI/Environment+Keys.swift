@@ -32,6 +32,10 @@ private struct ContactsServiceKey: EnvironmentKey {
     )
 }
 
+private struct RealtimeSocketClientKey: EnvironmentKey {
+    static let defaultValue: RealtimeSocketClientProtocol = MockRealtimeSocketClient()
+}
+
 extension EnvironmentValues {
     var authService: AuthServiceProtocol {
         get { self[AuthServiceKey.self] }
@@ -48,5 +52,9 @@ extension EnvironmentValues {
     var contactsService: ContactsServiceProtocol {
         get { self[ContactsServiceKey.self] }
         set { self[ContactsServiceKey.self] = newValue }
+    }
+    var realtimeSocketClient: RealtimeSocketClientProtocol {
+        get { self[RealtimeSocketClientKey.self] }
+        set { self[RealtimeSocketClientKey.self] = newValue }
     }
 }

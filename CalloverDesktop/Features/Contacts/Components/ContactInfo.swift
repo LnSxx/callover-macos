@@ -25,9 +25,12 @@ struct ContactInfo: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .center, spacing: 18) {
-                avatar
+                ContactAvatar(
+                    initial: contact.initials,
+                    variant: .large,
+                )
                 
-                Text(title)
+                Text(contact.displayName)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
@@ -56,39 +59,6 @@ struct ContactInfo: View {
             }
             .padding(32)
         }
-    }
-    
-    private var avatar: some View {
-        ZStack {
-            Circle()
-                .fill(.quaternary)
-            
-            if let initial {
-                Text(initial)
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(.primary)
-            } else {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 28))
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .frame(width: 76, height: 76)
-    }
-    
-    private var initial: String? {
-        guard let alias = contact.alias?
-            .trimmingCharacters(in: .whitespacesAndNewlines),
-              !alias.isEmpty,
-              let firstCharacter = alias.first else {
-            return nil
-        }
-        
-        return String(firstCharacter).uppercased()
-    }
-    
-    private var title: String {
-        contact.alias ?? "@\(contact.contactUserId)"
     }
 }
 

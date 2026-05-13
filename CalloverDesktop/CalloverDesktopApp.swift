@@ -16,6 +16,7 @@ struct CalloverDesktopApp: App {
     private var profileService: ProfileServiceProtocol
     private var accountService: AccountServiceProtocol
     private var contactsService: ContactsServiceProtocol
+    private var realtimeSocketClient: RealtimeSocketClientProtocol
     
     @StateObject private var authGateViewModel: AuthGateViewModel
     
@@ -31,11 +32,15 @@ struct CalloverDesktopApp: App {
             localDataSource: localContactsServiceInstance,
             syncStateService: syncStateServiceInstance,
         )
+        let realtimeSocketClientInstance = RealtimeSocketClient(
+            baseURL: AppConfig.apiBaseURL
+        )
         
         self.authService = authServiceInstance
         self.profileService = profileServiceInstance
         self.accountService = accountServiceInstance
         self.contactsService = contactsServiceInstance
+        self.realtimeSocketClient = realtimeSocketClientInstance
         
         let authGateViewModelInstance = AuthGateViewModel(profileService: profileServiceInstance)
         _authGateViewModel = StateObject(wrappedValue: authGateViewModelInstance)
@@ -53,6 +58,7 @@ struct CalloverDesktopApp: App {
                 .environment(\.profileService, profileService)
                 .environment(\.accountService, accountService)
                 .environment(\.contactsService, contactsService)
+                .environment(\.realtimeSocketClient, realtimeSocketClient)
         }
     }
 }

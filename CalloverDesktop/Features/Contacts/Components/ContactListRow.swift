@@ -12,11 +12,14 @@ struct ContactListRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            avatar
+            ContactAvatar(
+                initial: contact.initials,
+                variant: .small,
+            )
             
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
-                    Text(displayName)
+                    Text(contact.displayName)
                         .font(.headline)
                         .lineLimit(1)
                     
@@ -42,32 +45,6 @@ struct ContactListRow: View {
             Spacer()
         }
         .padding(.vertical, 6)
-    }
-    
-    private var avatar: some View {
-        ZStack {
-            Circle()
-                .fill(.quaternary)
-            
-            Text(initials)
-                .font(.caption)
-                .fontWeight(.semibold)
-        }
-        .frame(width: 34, height: 34)
-    }
-    
-    private var displayName: String {
-        let alias = contact.alias?.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if let alias, !alias.isEmpty {
-            return alias
-        }
-        
-        return "@\(contact.contactUserId)"
-    }
-    
-    private var initials: String {
-        String(displayName.prefix(1)).uppercased()
     }
 }
 
