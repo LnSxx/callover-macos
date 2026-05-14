@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 final class PresenceStore: ObservableObject {
     @Published private(set) var onlineUserIds: Set<String> = []
     

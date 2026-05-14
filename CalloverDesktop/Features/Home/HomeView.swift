@@ -8,22 +8,73 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject private var contactsViewModel: ContactsViewModel
+    @EnvironmentObject private var presenceStore: PresenceStore
+    
+    @StateObject private var viewModel = HomeViewModel()
+    
+    let onAddContactTap: () -> Void
+    
+    init(onAddContactTap: @escaping () -> Void = {}) {
+        self.onAddContactTap = onAddContactTap
+    }
+    
+    private let columns = [
+        GridItem(.adaptive(minimum: 220), spacing: 16)
+    ]
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("You don't have any contacts yet")
-                    .font(.title2)
-                    .bold()
-
-                Button {
-                } label: {
-                    Label("Add Contact", systemImage: "person.badge.plus")
+        Group {
+            if contactsViewModel.contacts.isEmpty {
+                emptyContactsView
+            } else {
+                contactsGrid
+            }
+        }
+        .navigationTitle("Home")
+        .onAppear {
+            updateHomeContacts()
+        }
+        .onChange(of: contactsViewModel.contacts) { _, _ in
+            updateHomeContacts()
+        }
+    }
+    
+    private var contactsGrid: some View {
+        let onlineUserIds = presenceStore.onlineUserIds
+        
+        return ScrollView {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
+                ForEach(viewModel.contacts) { contact in
+                    ContactCard(
+                        contact: contact,
+                        isOnline: onlineUserIds.contains(contact.contactUserId)
+                    )
                 }
             }
-            Spacer()
+            .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(32)
+    }
+    
+    private var emptyContactsView: some View {
+        ContentUnavailableView {
+            Label("No Contacts", systemImage: "person.crop.circle.badge.plus")
+        } description: {
+            Text("Add your first contact to start calling.")
+        } actions: {
+            Button {
+                onAddContactTap()
+            } label: {
+                Label("Add Contact", systemImage: "plus")
+            }
+        }
+    }
+    
+    private func updateHomeContacts() {
+        viewModel.updateContacts(
+            contactsViewModel.contacts,
+            onlineUserIds: presenceStore.onlineUserIds
+        )
     }
 }
 
