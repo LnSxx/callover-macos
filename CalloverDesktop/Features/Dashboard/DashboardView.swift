@@ -67,6 +67,20 @@ struct DashboardView: View {
 
 #Preview {
     let profileService = ProfileService()
+    let contactsService = MockContactsService()
+    let contactsViewModel = ContactsViewModel(service: contactsService)
+    let presenceStore = PresenceStore()
+    let callStore = CallStore()
+    let callCoordinator = MockCallCoordinator()
+
     DashboardView()
         .environmentObject(AuthGateViewModel(profileService: profileService))
+        .environmentObject(contactsViewModel)
+        .environmentObject(presenceStore)
+        .environmentObject(callStore)
+        .environment(\.contactsService, contactsService)
+        .environment(\.callCoordinator, callCoordinator)
+        .environment(\.profileService, profileService)
+        .environment(\.authService, AuthService())
+        .environment(\.accountService, AccountService())
 }
