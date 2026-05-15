@@ -36,6 +36,14 @@ private struct RealtimeSocketClientKey: EnvironmentKey {
     static let defaultValue: RealtimeSocketClientProtocol = MockRealtimeSocketClient()
 }
 
+private struct SignalingServiceKey: EnvironmentKey {
+    static let defaultValue: SignalingServiceProtocol = MockSignalingService()
+}
+
+private struct CallCoordinatorKey: EnvironmentKey {
+    static let defaultValue: CallCoordinatorProtocol = MockCallCoordinator()
+}
+
 extension EnvironmentValues {
     var authService: AuthServiceProtocol {
         get { self[AuthServiceKey.self] }
@@ -56,5 +64,13 @@ extension EnvironmentValues {
     var realtimeSocketClient: RealtimeSocketClientProtocol {
         get { self[RealtimeSocketClientKey.self] }
         set { self[RealtimeSocketClientKey.self] = newValue }
+    }
+    var signalingService: SignalingServiceProtocol {
+        get { self[SignalingServiceKey.self] }
+        set { self[SignalingServiceKey.self] = newValue }
+    }
+    var callCoordinator: CallCoordinatorProtocol {
+        get { self[CallCoordinatorKey.self] }
+        set { self[CallCoordinatorKey.self] = newValue }
     }
 }

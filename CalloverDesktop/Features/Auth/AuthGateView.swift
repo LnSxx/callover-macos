@@ -10,6 +10,7 @@ import SwiftUI
 struct AuthGateView: View {
     @Environment(\.contactsService) var contactsService
     @Environment(\.realtimeSocketClient) var realtimeSocketClient
+    @Environment(\.signalingService) var signalingService
     @EnvironmentObject var viewModel: AuthGateViewModel
     
     var body: some View {
@@ -17,10 +18,12 @@ struct AuthGateView: View {
             switch viewModel.state {
             case .loading:
                 AuthLoadingView()
-            case .authenticated(_):
+            case .authenticated(let currentUser):
                 AuthenticatedView(
+                    currentUserId: currentUser.id,
                     contactsService: contactsService,
                     realtimeSocketClient: realtimeSocketClient,
+                    signalingService: signalingService,
                 )
             case .unauthenticated:
                 UnauthenticatedView()

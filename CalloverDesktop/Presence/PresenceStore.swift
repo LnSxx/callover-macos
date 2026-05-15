@@ -9,10 +9,10 @@ import Foundation
 import Combine
 
 @MainActor
-final class PresenceStore: ObservableObject {
+final class PresenceStore: ObservableObject, RealtimeCallEventHandler {
     @Published private(set) var onlineUserIds: Set<String> = []
     
-    func apply(_ event: RealtimeEvent) {
+    func handle(_ event: RealtimeEvent) {
         switch event {
         case .presenceInitial(let payload):
             onlineUserIds = Set(payload.onlineUserIds)
@@ -20,6 +20,8 @@ final class PresenceStore: ObservableObject {
             onlineUserIds.insert(payload.userId)
         case .presenceUserOffline(let payload):
             onlineUserIds.remove(payload.userId)
+        default:
+            break
         }
     }
     
