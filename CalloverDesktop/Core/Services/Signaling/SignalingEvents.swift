@@ -15,7 +15,11 @@ struct CallOfferPayload: Decodable {
 
 struct CallAnswerPayload: Decodable {
     let fromUserId: String
-    let sdp: String?
+    let sdp: String
+}
+
+struct CallDeclinePayload: Decodable {
+    let fromUserId: String
 }
 
 struct CallCancelPayload: Decodable {

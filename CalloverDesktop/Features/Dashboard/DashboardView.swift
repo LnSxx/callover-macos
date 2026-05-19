@@ -57,6 +57,9 @@ struct DashboardView: View {
                 AccountView()
             }
         }
+        .overlay(alignment: .top) {
+            CallView()
+        }
     }
     
     private func sidebarItem(_ section: DashboardSection) -> some View {
@@ -78,8 +81,8 @@ struct DashboardView: View {
         .environmentObject(contactsViewModel)
         .environmentObject(presenceStore)
         .environmentObject(callStore)
+        .environmentObject(callCoordinator)
         .environment(\.contactsService, contactsService)
-        .environment(\.callCoordinator, callCoordinator)
         .environment(\.profileService, profileService)
         .environment(\.authService, AuthService())
         .environment(\.accountService, AccountService())

@@ -11,28 +11,32 @@ struct ContactsView: View {
     @EnvironmentObject var contactsViewModel: ContactsViewModel
     @Environment(\.contactsService) var contactsService
     
-    @State private var selectedContact: Contact?
+    @State private var selectedContactId: Contact.ID?
     @State private var isShowingInspector = true
     @State private var isShowingAddContact = false
     @State private var searchText = ""
     
+    private var selectedContact: Contact? {
+        contactsViewModel.contacts.first { $0.id == selectedContactId }
+    }
+    
     private func onCreateContact(contact: Contact) {
         contactsViewModel.upsertContact(contact: contact)
         
-        selectedContact = contact
+        selectedContactId = contact.id
         isShowingInspector = true
         isShowingAddContact = false
     }
     
     private func onContactUpdate(contact: Contact) {
         contactsViewModel.upsertContact(contact: contact)
-        selectedContact = contact
+        selectedContactId = contact.id
         isShowingInspector = true
     }
     
     private func onContactDelete(contact: Contact) {
         contactsViewModel.deleteContact(id: contact.id)
-        selectedContact = nil
+        selectedContactId = nil
         isShowingInspector = false
     }
     
@@ -53,17 +57,26 @@ struct ContactsView: View {
     }
     
     var body: some View {
-        List(selection: $selectedContact) {
-            ForEach(visibleContacts) { contact in
-                ContactListRow(contact: contact)
-                    .tag(contact)
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                
+                TextField("Search contacts", text: $searchText)
+                    .textFieldStyle(.plain)
+            }
+            .padding(10)
+            .background(.quaternary.opacity(0.5))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding()
+            
+            List(selection: $selectedContactId) {
+                ForEach(visibleContacts) { contact in
+                    ContactListRow(contact: contact)
+                        .tag(contact.id)
+                }
             }
         }
-        .searchable(
-            text: $searchText,
-            placement: .sidebar,
-            prompt: "Search contacts"
-        )
         .navigationTitle("Contacts")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -97,28 +110,16 @@ struct ContactsView: View {
             if let selectedContact {
                 ContactInfo(
                     contact: selectedContact,
-                    onUpdate: { contact in
-                        onContactUpdate(contact: contact)
-                    },
-                    onDelete: { contact in
-                        onContactDelete(contact: contact)
-                    },
+                    onUpdate: onContactUpdate,
+                    onDelete: onContactDelete
                 )
-                .inspectorColumnWidth(
-                    min: 320,
-                    ideal: 320,
-                    max: 500
-                )
+                .inspectorColumnWidth(min: 320, ideal: 320, max: 500)
             } else {
                 ContentUnavailableView(
                     "No Contact Selected",
                     systemImage: "person.crop.circle"
                 )
-                .inspectorColumnWidth(
-                    min: 320,
-                    ideal: 320,
-                    max: 500
-                )
+                .inspectorColumnWidth(min: 320, ideal: 320, max: 500)
             }
         }
     }

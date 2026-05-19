@@ -27,7 +27,7 @@ final class RealtimeSocketClient: RealtimeSocketClientProtocol {
         self.manager = SocketManager(
             socketURL: baseURL,
             config: [
-                .log(true),
+                .log(false),
                 .compress,
                 .forceWebsockets(true),
                 .path("/socket.io")

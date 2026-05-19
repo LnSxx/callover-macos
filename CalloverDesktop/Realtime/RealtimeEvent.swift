@@ -14,6 +14,7 @@ enum RealtimeEvent: Decodable {
     
     case callOffer(CallOfferPayload)
     case callAnswer(CallAnswerPayload)
+    case callDecline(CallDeclinePayload)
     case callCancel(CallCancelPayload)
     case callEnd(CallEndPayload)
     case callIceCandidate(CallIceCandidatePayload)
@@ -51,6 +52,11 @@ enum RealtimeEvent: Decodable {
         case .callAnswer:
             self = .callAnswer(
                 try container.decode(CallAnswerPayload.self, forKey: .payload)
+            )
+        
+        case .callDecline:
+            self = .callDecline(
+                try container.decode(CallDeclinePayload.self, forKey: .payload)
             )
         
         case .callCancel:

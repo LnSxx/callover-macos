@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @MainActor
-final class PresenceStore: ObservableObject, RealtimeCallEventHandler {
+final class PresenceStore: ObservableObject, RealtimeEventHandler {
     @Published private(set) var onlineUserIds: Set<String> = []
     
     func handle(_ event: RealtimeEvent) {

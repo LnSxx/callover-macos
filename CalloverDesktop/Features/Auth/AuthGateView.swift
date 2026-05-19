@@ -38,13 +38,5 @@ struct AuthGateView: View {
                 break
             }
         }
-        .onAppear {
-            switch viewModel.state {
-            case .authenticated:
-                realtimeSocketClient.connect()
-            default:
-                break
-            }
-        }
     }
 }

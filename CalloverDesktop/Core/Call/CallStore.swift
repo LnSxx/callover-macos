@@ -59,9 +59,11 @@ final class CallStore: ObservableObject {
                 sdp: sdp
             )
         )
+        print("CallStore.registerIncomingCall() self:", ObjectIdentifier(self))
     }
     
     func markIncomingCallAccepted() {
+        print("CallStore.markIncomingCallAccepted() self:", ObjectIdentifier(self))
         guard var currentCall = call else {
             return
         }
@@ -166,6 +168,7 @@ final class CallStore: ObservableObject {
     }
     
     func declineIncomingCall() -> String? {
+        print("CallStore.declineIncomingCall() self:", ObjectIdentifier(self))
         guard let currentCall = call else {
             return nil
         }

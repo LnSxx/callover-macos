@@ -40,10 +40,6 @@ private struct SignalingServiceKey: EnvironmentKey {
     static let defaultValue: SignalingServiceProtocol = MockSignalingService()
 }
 
-private struct CallCoordinatorKey: EnvironmentKey {
-    static let defaultValue: CallCoordinatorProtocol = MockCallCoordinator()
-}
-
 extension EnvironmentValues {
     var authService: AuthServiceProtocol {
         get { self[AuthServiceKey.self] }
@@ -68,9 +64,5 @@ extension EnvironmentValues {
     var signalingService: SignalingServiceProtocol {
         get { self[SignalingServiceKey.self] }
         set { self[SignalingServiceKey.self] = newValue }
-    }
-    var callCoordinator: CallCoordinatorProtocol {
-        get { self[CallCoordinatorKey.self] }
-        set { self[CallCoordinatorKey.self] = newValue }
     }
 }

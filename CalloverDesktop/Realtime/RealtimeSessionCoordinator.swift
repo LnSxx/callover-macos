@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-protocol RealtimeCallEventHandler: AnyObject {
+protocol RealtimeEventHandler: AnyObject {
     func handle(_ event: RealtimeEvent)
 }
 
@@ -16,7 +16,7 @@ protocol RealtimeCallEventHandler: AnyObject {
 final class RealtimeSessionCoordinator: ObservableObject {
     private let realtimeSocketClient: RealtimeSocketClientProtocol
     private let presenceStore: PresenceStore
-    private let callEventHandler: RealtimeCallEventHandler
+    private let callEventHandler: RealtimeEventHandler
     
     private var subscribedPresenceUserIds: Set<String> = []
     

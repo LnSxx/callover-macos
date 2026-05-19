@@ -14,6 +14,7 @@ enum RealtimeEventType: String, Decodable {
     
     case callOffer = "call.offer"
     case callAnswer = "call.answer"
+    case callDecline = "call.decline"
     case callCancel = "call.cancel"
     case callEnd = "call.end"
     case callIceCandidate = "call.ice-candidate"

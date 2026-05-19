@@ -13,8 +13,9 @@ protocol SignalingServiceProtocol {
     )
     func sendAnswer(
         toUserId: String,
-        sdp: String?,
+        sdp: String,
     )
+    func sendDecline(toUserId: String)
     func sendCancel(toUserId: String)
     func sendEnd(toUserId: String)
     func sendIceCandidate(
@@ -47,13 +48,22 @@ final class SignalingService: SignalingServiceProtocol {
     
     func sendAnswer(
         toUserId: String,
-        sdp: String?
+        sdp: String,
     ) {
         realtimeSocketClient.emit(
             "call.answer",
             payload: [
                 "toUserId": toUserId,
-                "sdp": sdp as Any,
+                "sdp": sdp,
+            ]
+        )
+    }
+    
+    func sendDecline(toUserId: String) {
+        realtimeSocketClient.emit(
+            "call.decline",
+            payload: [
+                "toUserId": toUserId,
             ]
         )
     }
@@ -99,8 +109,10 @@ final class MockSignalingService: SignalingServiceProtocol {
     
     func sendAnswer(
         toUserId: String,
-        sdp: String?
+        sdp: String,
     ) {}
+    
+    func sendDecline(toUserId: String) {}
     
     func sendCancel(toUserId: String) {}
     
