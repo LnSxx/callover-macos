@@ -31,6 +31,7 @@ struct AuthenticatedView: View {
             .environmentObject(session.contactsViewModel)
             .environmentObject(session.presenceStore)
             .environmentObject(session.callStore)
+            .environmentObject(session.callMediaStore)
             .environmentObject(session.callCoordinator)
             .onAppear {
                 session.realtimeCoordinator.start()

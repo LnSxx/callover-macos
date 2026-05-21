@@ -20,7 +20,9 @@ protocol SignalingServiceProtocol {
     func sendEnd(toUserId: String)
     func sendIceCandidate(
         toUserId: String,
-        candidate: String,
+        sdp: String,
+        sdpMLineIndex: Int32,
+        sdpMid: String?,
     )
 }
 
@@ -41,7 +43,7 @@ final class SignalingService: SignalingServiceProtocol {
             payload: [
                 "toUserId": toUserId,
                 "sdp": sdp,
-                "type": type,
+                "type": type.rawValue,
             ]
         )
     }
@@ -88,13 +90,18 @@ final class SignalingService: SignalingServiceProtocol {
     
     func sendIceCandidate(
         toUserId: String,
-        candidate: String
+        sdp: String,
+        sdpMLineIndex: Int32,
+        sdpMid: String?,
     ) {
+        
         realtimeSocketClient.emit(
             "call.ice-candidate",
             payload: [
                 "toUserId": toUserId,
-                "candidate": candidate,
+                "sdp": sdp,
+                "sdpMLineIndex": sdpMLineIndex,
+                "sdpMid": sdpMid as Any,
             ]
         )
     }
@@ -120,6 +127,8 @@ final class MockSignalingService: SignalingServiceProtocol {
     
     func sendIceCandidate(
         toUserId: String,
-        candidate: String
+        sdp: String,
+        sdpMLineIndex: Int32,
+        sdpMid: String?,
     ) {}
 }

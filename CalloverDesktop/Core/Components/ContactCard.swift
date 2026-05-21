@@ -10,17 +10,32 @@ import SwiftUI
 struct ContactCard: View {
     let contact: Contact
     let isOnline: Bool
-
+    
+    let onStartVideoCallTap: () -> Void
+    let onStartAudioCallTap: () -> Void
+    
+    init(
+        contact: Contact,
+        isOnline: Bool,
+        onStartVideoCallTap: @escaping () -> Void,
+        onStartAudioCallTap: @escaping () -> Void
+    ) {
+        self.contact = contact
+        self.isOnline = isOnline
+        self.onStartVideoCallTap = onStartVideoCallTap
+        self.onStartAudioCallTap = onStartAudioCallTap
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             avatar
-
+            
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 6) {
                     Text(contact.displayName)
                         .font(.title)
                         .bold()
-
+                    
                     if contact.isFavourite {
                         Image(systemName: "star.fill")
                             .font(.caption2)
@@ -31,13 +46,13 @@ struct ContactCard: View {
             
             HStack(spacing: 8) {
                 Button {
-                    // video call action
+                    onStartVideoCallTap()
                 } label: {
                     Label("Video call", systemImage: "video.fill")
                 }
-
+                
                 Button {
-                    // audio call action
+                    onStartAudioCallTap()
                 } label: {
                     Label("Audio call", systemImage: "phone.fill")
                 }
@@ -50,7 +65,7 @@ struct ContactCard: View {
         .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 14))
     }
-
+    
     private var avatar: some View {
         ContactAvatar(
             initial: contact.initials,
@@ -65,7 +80,7 @@ struct ContactCard: View {
 
 private struct OnlineIndicator: View {
     let isOnline: Bool
-
+    
     var body: some View {
         Circle()
             .fill(.green)
@@ -96,5 +111,7 @@ private struct OnlineIndicator: View {
     ContactCard(
         contact: contact,
         isOnline: true,
+        onStartVideoCallTap: {},
+        onStartAudioCallTap: {},
     )
 }

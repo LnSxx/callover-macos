@@ -11,6 +11,8 @@ final class AuthenticatedSession: ObservableObject {
     let contactsViewModel: ContactsViewModel
     let presenceStore: PresenceStore
     let callStore: CallStore
+    let callMediaStore: CallMediaStore
+    let webRTCClient: WebRTCClient
     let callCoordinator: CallCoordinator
     let realtimeCoordinator: RealtimeSessionCoordinator
     
@@ -25,10 +27,13 @@ final class AuthenticatedSession: ObservableObject {
         let contactsViewModel = ContactsViewModel(service: contactsService)
         let presenceStore = PresenceStore()
         let callStore = CallStore()
+        let callMediaStore = CallMediaStore()
+        let webRTCClient = WebRTCClient(mediaStore: callMediaStore)
         let callCoordinator = CallCoordinator(
             currentUserId: currentUserId,
             signalingService: signalingService,
-            callStore: callStore
+            callStore: callStore,
+            webRTCClient: webRTCClient
         )
         let realtimeCoordinator = RealtimeSessionCoordinator(
             realtimeSocketClient: realtimeSocketClient,
@@ -39,6 +44,8 @@ final class AuthenticatedSession: ObservableObject {
         self.contactsViewModel = contactsViewModel
         self.presenceStore = presenceStore
         self.callStore = callStore
+        self.callMediaStore = callMediaStore
+        self.webRTCClient = webRTCClient
         self.callCoordinator = callCoordinator
         self.realtimeCoordinator = realtimeCoordinator
         

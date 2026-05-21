@@ -32,5 +32,7 @@ struct CallEndPayload: Decodable {
 
 struct CallIceCandidatePayload: Decodable {
     let fromUserId: String
-    let candidate: String
+    let sdp: String
+    let sdpMLineIndex: Int32
+    let sdpMid: String?
 }

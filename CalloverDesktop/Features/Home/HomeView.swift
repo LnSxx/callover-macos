@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var contactsViewModel: ContactsViewModel
     @EnvironmentObject private var presenceStore: PresenceStore
+    @EnvironmentObject private var callCoordinator: CallCoordinator
     
     @StateObject private var viewModel = HomeViewModel()
     
@@ -48,7 +49,19 @@ struct HomeView: View {
                 ForEach(viewModel.contacts) { contact in
                     ContactCard(
                         contact: contact,
-                        isOnline: onlineUserIds.contains(contact.contactUserId)
+                        isOnline: onlineUserIds.contains(contact.contactUserId),
+                        onStartVideoCallTap: {
+                            callCoordinator.startCall(
+                                targetUserId: contact.contactUserId,
+                                type: .video
+                            )
+                        },
+                        onStartAudioCallTap: {
+                            callCoordinator.startCall(
+                                targetUserId: contact.contactUserId,
+                                type: .audio
+                            )
+                        },
                     )
                 }
             }
@@ -79,5 +92,13 @@ struct HomeView: View {
 }
 
 #Preview {
+    let contactsService = MockContactsService()
+    let contactsViewModel = ContactsViewModel(service: contactsService)
+    let presenceStore = PresenceStore()
+    let callCoordinator = MockCallCoordinator()
+        
     HomeView()
+        .environmentObject(contactsViewModel)
+        .environmentObject(presenceStore)
+        .environmentObject(callCoordinator)
 }
