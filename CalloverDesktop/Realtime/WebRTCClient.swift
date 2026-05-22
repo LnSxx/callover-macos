@@ -32,51 +32,62 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         super.init()
     }
     
-    func startLocalMedia() async throws {
-        let hasCameraPermission = await requestPermission(for: .video)
+    func startLocalMedia(
+        includeVideo: Bool = true
+    ) async throws {
         let hasMicrophonePermission = await requestPermission(for: .audio)
-        
+
         if hasMicrophonePermission {
             let audioSource = factory.audioSource(with: nil)
             let audioTrack = factory.audioTrack(
                 with: audioSource,
                 trackId: "local-audio"
             )
-            
+
             localAudioTrack = audioTrack
         }
-        
-        if hasCameraPermission {
-            let videoSource = factory.videoSource()
-            let videoTrack = factory.videoTrack(
-                with: videoSource,
-                trackId: "local-video"
-            )
-            
-            localVideoTrack = videoTrack
-            mediaStore.localVideoTrack = videoTrack
-            
-            let capturer = RTCCameraVideoCapturer(delegate: videoSource)
-            videoCapturer = capturer
-            
-            guard let device = RTCCameraVideoCapturer.captureDevices().first,
-                  let format = RTCCameraVideoCapturer.supportedFormats(for: device).last else {
-                return
-            }
-            
-            let fps = format.videoSupportedFrameRateRanges
-                .map { Int($0.maxFrameRate) }
-                .max() ?? 30
-            
-            try await capturer.startCapture(
-                with: device,
-                format: format,
-                fps: min(fps, 30)
-            )
+
+        guard includeVideo else {
+            return
         }
+
+        let hasCameraPermission = await requestPermission(for: .video)
+
+        guard hasCameraPermission else {
+            return
+        }
+
+        let videoSource = factory.videoSource()
+        let videoTrack = factory.videoTrack(
+            with: videoSource,
+            trackId: "local-video"
+        )
+
+        localVideoTrack = videoTrack
+        mediaStore.localVideoTrack = videoTrack
+
+        let capturer = RTCCameraVideoCapturer(delegate: videoSource)
+        videoCapturer = capturer
+
+        guard let device = RTCCameraVideoCapturer.captureDevices().first,
+              let format = RTCCameraVideoCapturer.supportedFormats(for: device).last else {
+            return
+        }
+
+        let fps = format.videoSupportedFrameRateRanges
+            .map { Int($0.maxFrameRate) }
+            .max() ?? 30
+
+        try await capturer.startCapture(
+            with: device,
+            format: format,
+            fps: min(fps, 30)
+        )
     }
     
-    func createPeerConnection() {
+    func createPeerConnection(
+        includeVideo: Bool = true
+    ) {
         let config = RTCConfiguration()
         config.iceServers = [
             RTCIceServer(urlStrings: ["stun:stun.l.google.com:19302"])
@@ -107,7 +118,7 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
             )
         }
         
-        if let localVideoTrack {
+        if includeVideo, let localVideoTrack {
             peerConnection.add(
                 localVideoTrack,
                 streamIds: ["callover-stream"]
@@ -115,7 +126,9 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         }
     }
     
-    func createOffer() async throws -> RTCSessionDescription {
+    func createOffer(
+        includeVideo: Bool = true
+    ) async throws -> RTCSessionDescription {
         guard let peerConnection else {
             throw WebRTCClientError.peerConnectionMissing
         }
@@ -123,7 +136,7 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         let constraints = RTCMediaConstraints(
             mandatoryConstraints: [
                 "OfferToReceiveAudio": "true",
-                "OfferToReceiveVideo": "true"
+                "OfferToReceiveVideo": includeVideo ? "true" : "false"
             ],
             optionalConstraints: nil
         )
@@ -134,7 +147,9 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         return offer
     }
     
-    func createAnswer() async throws -> RTCSessionDescription {
+    func createAnswer(
+        includeVideo: Bool = true
+    ) async throws -> RTCSessionDescription {
         guard let peerConnection else {
             throw WebRTCClientError.peerConnectionMissing
         }
@@ -142,7 +157,7 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         let constraints = RTCMediaConstraints(
             mandatoryConstraints: [
                 "OfferToReceiveAudio": "true",
-                "OfferToReceiveVideo": "true"
+                "OfferToReceiveVideo": includeVideo ? "true" : "false"
             ],
             optionalConstraints: nil
         )

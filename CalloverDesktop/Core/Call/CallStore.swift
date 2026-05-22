@@ -19,23 +19,26 @@ final class CallStore: ObservableObject {
         return call.status != .ended
     }
     
+    @discardableResult
     func registerOutgoingCall(
         currentUserId: String,
         targetUserId: String,
-        type: CallType,
-    ) {
+        type: CallType
+    ) -> Bool {
         guard call == nil else {
-            return
+            return false
         }
-        
+
         call = Call(
             callerUserId: currentUserId,
             calleeUserId: targetUserId,
             direction: .outgoing,
             status: .calling,
             type: type,
-            remoteDescription: nil,
+            remoteDescription: nil
         )
+
+        return true
     }
     
     func registerIncomingCall(
@@ -146,25 +149,40 @@ final class CallStore: ObservableObject {
         call = nil
     }
     
-    func markCallEndedByPeer(fromUserId: String) {
-        guard var currentCall = call else {
+    func markCallDeclinedByPeer(fromUserId: String) {
+        guard let currentCall = call else {
             return
         }
         
-        let expectedPeerId = currentCall.direction == .incoming
-        ? currentCall.callerUserId
-        : currentCall.calleeUserId
+        guard currentCall.direction == .outgoing else {
+            return
+        }
         
+        guard currentCall.status == .calling else {
+            return
+        }
+        
+        guard currentCall.calleeUserId == fromUserId else {
+            return
+        }
+        
+        call = nil
+    }
+    
+    func markCallEndedByPeer(fromUserId: String) {
+        guard let currentCall = call else {
+            return
+        }
+
+        let expectedPeerId = currentCall.direction == .incoming
+            ? currentCall.callerUserId
+            : currentCall.calleeUserId
+
         guard expectedPeerId == fromUserId else {
             return
         }
-        
-        guard currentCall.status == .active || currentCall.status == .connecting else {
-            return
-        }
-        
-        currentCall.status = .ended
-        call = currentCall
+
+        reset()
     }
     
     func declineIncomingCall() -> String? {
@@ -199,20 +217,20 @@ final class CallStore: ObservableObject {
     }
     
     func markCurrentCallEnded() -> String? {
-        guard var currentCall = call else {
+        guard let currentCall = call else {
             return nil
         }
-        guard currentCall.status == .active || currentCall.status == .connecting else {
+
+        guard currentCall.status == .active || currentCall.status == .connecting || currentCall.status == .calling else {
             return nil
         }
-        
+
         let peerId = currentCall.direction == .incoming
-        ? currentCall.callerUserId
-        : currentCall.calleeUserId
-        
-        currentCall.status = .ended
-        call = currentCall
-        
+            ? currentCall.callerUserId
+            : currentCall.calleeUserId
+
+        reset()
+
         return peerId
     }
     

@@ -6,22 +6,23 @@
 //
 
 import SwiftUI
+import AudioToolbox
 
 struct CallRingingBanner: View {
     let call: Call
     let contact: Contact?
-
+    
     let onAccept: () -> Void
     let onDecline: () -> Void
-
+    
     private var displayName: String {
         contact?.displayName ?? call.callerUserId
     }
-
+    
     private var initials: String {
         contact?.initials ?? ""
     }
-
+    
     private var subtitle: String {
         switch call.type {
         case .audio:
@@ -30,25 +31,25 @@ struct CallRingingBanner: View {
             return "Incoming video call"
         }
     }
-
+    
     var body: some View {
         HStack(spacing: 14) {
             ContactAvatar(
                 initial: initials,
                 variant: .medium
             )
-
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(displayName)
                     .font(.headline)
-
+                
                 Text(subtitle)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
-
+            
             Spacer()
-
+            
             Button {
                 onDecline()
             } label: {
@@ -57,7 +58,7 @@ struct CallRingingBanner: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(.red)
-
+            
             Button {
                 onAccept()
             } label: {
@@ -72,6 +73,9 @@ struct CallRingingBanner: View {
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .shadow(radius: 10)
         .frame(maxWidth: 520)
+        .onAppear {
+            AudioServicesPlaySystemSound(1000)
+        }
     }
 }
 

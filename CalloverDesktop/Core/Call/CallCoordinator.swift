@@ -49,16 +49,27 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
     ) {
         Task {
             do {
-                try await webRTCClient.startLocalMedia()
-                webRTCClient.createPeerConnection()
+                let includeVideo = type == .video
                 
-                callStore.registerOutgoingCall(
+                try await webRTCClient.startLocalMedia(
+                    includeVideo: includeVideo
+                )
+                webRTCClient.createPeerConnection(
+                    includeVideo: includeVideo
+                )
+                
+                guard callStore.registerOutgoingCall(
                     currentUserId: currentUserId,
                     targetUserId: targetUserId,
                     type: type
-                )
+                ) else {
+                    webRTCClient.close()
+                    return
+                }
                 
-                let offer = try await webRTCClient.createOffer()
+                let offer = try await webRTCClient.createOffer(
+                    includeVideo: includeVideo
+                )
                 
                 signalingService.sendOffer(
                     toUserId: targetUserId,
@@ -79,8 +90,14 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
             do {
                 callStore.markIncomingCallAccepted()
                 
-                try await webRTCClient.startLocalMedia()
-                webRTCClient.createPeerConnection()
+                let includeVideo = call.type == .video
+                
+                try await webRTCClient.startLocalMedia(
+                    includeVideo: includeVideo
+                )
+                webRTCClient.createPeerConnection(
+                    includeVideo: includeVideo
+                )
                 
                 guard let sdp = call.remoteDescription?.sdp else {
                     callStore.reset()
@@ -95,7 +112,9 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
                 
                 try await webRTCClient.setRemoteDescription(remoteOffer)
                 
-                let answer = try await webRTCClient.createAnswer()
+                let answer = try await webRTCClient.createAnswer(
+                    includeVideo: includeVideo
+                )
                 
                 signalingService.sendAnswer(
                     toUserId: call.callerUserId,
@@ -143,6 +162,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
             handleIncomingCallAnswer(payload)
         case .callCancel(let payload):
             handleIncomingCallCancel(payload)
+        case .callDecline(let payload):
+            handleIncomingCallDecline(payload)
         case .callEnd(let payload):
             handleIncomingCallEnd(payload)
         case .callIceCandidate(let payload):
@@ -193,7 +214,12 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
         callStore.markCallCancelledByPeer(fromUserId: payload.fromUserId)
         webRTCClient.close()
     }
-
+    
+    private func handleIncomingCallDecline(_ payload: CallDeclinePayload) {
+        callStore.markCallDeclinedByPeer(fromUserId: payload.fromUserId)
+        webRTCClient.close()
+    }
+    
     private func handleIncomingCallEnd(_ payload: CallEndPayload) {
         callStore.markCallEndedByPeer(fromUserId: payload.fromUserId)
         webRTCClient.close()
