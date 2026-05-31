@@ -17,6 +17,7 @@ enum RealtimeEvent: Decodable {
     case callDecline(CallDeclinePayload)
     case callCancel(CallCancelPayload)
     case callEnd(CallEndPayload)
+    case callTimeout(CallTimeoutPayload)
     case callIceCandidate(CallIceCandidatePayload)
     
     private enum CodingKeys: String, CodingKey {
@@ -67,6 +68,11 @@ enum RealtimeEvent: Decodable {
         case .callEnd:
             self = .callEnd(
                 try container.decode(CallEndPayload.self, forKey: .payload)
+            )
+        
+        case .callTimeout:
+            self = .callTimeout(
+                try container.decode(CallTimeoutPayload.self, forKey: .payload)
             )
         
         case .callIceCandidate:

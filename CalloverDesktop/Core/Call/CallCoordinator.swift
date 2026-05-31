@@ -166,6 +166,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
             handleIncomingCallDecline(payload)
         case .callEnd(let payload):
             handleIncomingCallEnd(payload)
+        case .callTimeout(let payload):
+            handleIncomingCallTimeout(payload)
         case .callIceCandidate(let payload):
             handleIncomingCallIceCandidate(payload)
         default:
@@ -222,6 +224,11 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
     
     private func handleIncomingCallEnd(_ payload: CallEndPayload) {
         callStore.markCallEndedByPeer(fromUserId: payload.fromUserId)
+        webRTCClient.close()
+    }
+    
+    private func handleIncomingCallTimeout(_ payload: CallTimeoutPayload) {
+        callStore.markCurrentCallEndedByTimeout()
         webRTCClient.close()
     }
     
