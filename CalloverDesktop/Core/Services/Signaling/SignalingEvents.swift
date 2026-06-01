@@ -7,11 +7,6 @@
 
 import Foundation
 
-enum CallTimeoutReason: String, Decodable {
-    case noAnswer = "no_answer"
-    case maxDuration = "max_duration"
-}
-
 struct CallOfferPayload: Decodable {
     let fromUserId: String
     let sdp: String

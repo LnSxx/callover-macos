@@ -21,15 +21,7 @@ private struct AccountServiceKey: EnvironmentKey {
 }
 
 private struct ContactsServiceKey: EnvironmentKey {
-    static let defaultValue: ContactsServiceProtocol = ContactsService(
-        remoteDataSource: RemoteContactsService(),
-        localDataSource: LocalContactsService(
-            context: PersistenceController.shared.viewContext
-        ),
-        syncStateService: SyncStateService(
-            context: PersistenceController.shared.viewContext
-        ),
-    )
+    static let defaultValue: ContactsServiceProtocol = MockContactsService()
 }
 
 private struct RealtimeSocketClientKey: EnvironmentKey {
@@ -38,6 +30,10 @@ private struct RealtimeSocketClientKey: EnvironmentKey {
 
 private struct SignalingServiceKey: EnvironmentKey {
     static let defaultValue: SignalingServiceProtocol = MockSignalingService()
+}
+
+private struct CallLogsServiceKey: EnvironmentKey {
+    static let defaultValue: CallLogsServiceProtocol = MockCallLogsService()
 }
 
 extension EnvironmentValues {
@@ -64,5 +60,9 @@ extension EnvironmentValues {
     var signalingService: SignalingServiceProtocol {
         get { self[SignalingServiceKey.self] }
         set { self[SignalingServiceKey.self] = newValue }
+    }
+    var callLogsService: CallLogsServiceProtocol {
+        get { self[CallLogsServiceKey.self] }
+        set { self[CallLogsServiceKey.self] = newValue }
     }
 }

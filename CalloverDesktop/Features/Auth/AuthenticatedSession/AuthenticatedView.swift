@@ -15,13 +15,15 @@ struct AuthenticatedView: View {
         contactsService: ContactsServiceProtocol,
         realtimeSocketClient: RealtimeSocketClientProtocol,
         signalingService: SignalingServiceProtocol,
+        callLogsService: CallLogsServiceProtocol,
     ) {
         _session = StateObject(
             wrappedValue: AuthenticatedSession(
                 currentUserId: currentUserId,
                 contactsService: contactsService,
                 realtimeSocketClient: realtimeSocketClient,
-                signalingService: signalingService
+                signalingService: signalingService,
+                callLogsService: callLogsService,
             )
         )
     }
@@ -33,6 +35,7 @@ struct AuthenticatedView: View {
             .environmentObject(session.callStore)
             .environmentObject(session.callMediaStore)
             .environmentObject(session.callCoordinator)
+            .environmentObject(session.callHistoryViewModel)
             .onAppear {
                 session.realtimeCoordinator.start()
             }

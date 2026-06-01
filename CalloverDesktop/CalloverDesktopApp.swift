@@ -18,6 +18,7 @@ struct CalloverDesktopApp: App {
     private var contactsService: ContactsServiceProtocol
     private var realtimeSocketClient: RealtimeSocketClientProtocol
     private var signalingService: SignalingServiceProtocol
+    private var callLogsService: CallLogsServiceProtocol
     
     @StateObject private var authGateViewModel: AuthGateViewModel
     
@@ -39,6 +40,12 @@ struct CalloverDesktopApp: App {
         let singalingServiceInstance = SignalingService(
             realtimeSocketClient: realtimeSocketClientInstance
         )
+        let remoteCallLogsServiceInstance = RemoteCallLogsService()
+        let localCallLogsServiceInstance = LocalCallLogsService(context: persistenceController.viewContext)
+        let callLogsServiceInstance = CallLogsService(
+            remoteDataSource: remoteCallLogsServiceInstance,
+            localDataSource: localCallLogsServiceInstance
+        )
         
         self.authService = authServiceInstance
         self.profileService = profileServiceInstance
@@ -46,6 +53,7 @@ struct CalloverDesktopApp: App {
         self.contactsService = contactsServiceInstance
         self.realtimeSocketClient = realtimeSocketClientInstance
         self.signalingService = singalingServiceInstance
+        self.callLogsService = callLogsServiceInstance
         
         let authGateViewModelInstance = AuthGateViewModel(profileService: profileServiceInstance)
         _authGateViewModel = StateObject(wrappedValue: authGateViewModelInstance)
@@ -65,6 +73,7 @@ struct CalloverDesktopApp: App {
                 .environment(\.contactsService, contactsService)
                 .environment(\.realtimeSocketClient, realtimeSocketClient)
                 .environment(\.signalingService, signalingService)
+                .environment(\.callLogsService, callLogsService)
         }
     }
 }

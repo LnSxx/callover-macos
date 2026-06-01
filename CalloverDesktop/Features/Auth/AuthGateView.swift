@@ -11,6 +11,7 @@ struct AuthGateView: View {
     @Environment(\.contactsService) var contactsService
     @Environment(\.realtimeSocketClient) var realtimeSocketClient
     @Environment(\.signalingService) var signalingService
+    @Environment(\.callLogsService) var callLogsService
     @EnvironmentObject var viewModel: AuthGateViewModel
     
     var body: some View {
@@ -24,6 +25,7 @@ struct AuthGateView: View {
                     contactsService: contactsService,
                     realtimeSocketClient: realtimeSocketClient,
                     signalingService: signalingService,
+                    callLogsService: callLogsService,
                 )
             case .unauthenticated:
                 UnauthenticatedView()
