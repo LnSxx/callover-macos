@@ -80,7 +80,7 @@ final class MockContactsService: ContactsServiceProtocol {
 extension MockContactsService {
     static let defaultContacts: [Contact] = [
         Contact(
-            id: "contact-1",
+            id: "peer-user-2",
             ownerId: "owner-1",
             contactUserId: "user-1",
             alias: "Peter I the Great",
@@ -92,7 +92,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-2",
+            id: "peer-user-1",
             ownerId: "owner-1",
             contactUserId: "user-2",
             alias: "Catherine II the Great",
@@ -104,7 +104,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-3",
+            id: "peer-user-3",
             ownerId: "owner-1",
             contactUserId: "user-3",
             alias: "Ivan IV the Terrible",
@@ -116,7 +116,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-4",
+            id: "peer-user-4",
             ownerId: "owner-1",
             contactUserId: "user-4",
             alias: "Nicholas II",
@@ -128,7 +128,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-5",
+            id: "peer-user-5",
             ownerId: "owner-1",
             contactUserId: "user-5",
             alias: "Alexander I",
@@ -140,7 +140,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-6",
+            id: "peer-user-6",
             ownerId: "owner-1",
             contactUserId: "user-6",
             alias: "Alexander II",
@@ -152,7 +152,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-7",
+            id: "peer-user-7",
             ownerId: "owner-1",
             contactUserId: "user-7",
             alias: "Alexander III",
@@ -164,7 +164,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-8",
+            id: "peer-user-8",
             ownerId: "owner-1",
             contactUserId: "user-8",
             alias: "Paul I",
@@ -176,7 +176,7 @@ extension MockContactsService {
             updatedAt: Date()
         ),
         Contact(
-            id: "contact-9",
+            id: "peer-user-10",
             ownerId: "owner-1",
             contactUserId: "user-9",
             alias: "Elizabeth Petrovna",

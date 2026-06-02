@@ -498,50 +498,6 @@
             endingLineNumber = "43"
             landmarkName = "fetchFirstPageOfLogs()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "6AB02932-1E70-4EB7-BDDB-579CCFBE6A31 - 145ac557dd66e3a5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for CalloverDesktop.CallLogsService.fetchFirstPageOfLogs() async throws -&gt; Swift.Optional&lt;Swift.String&gt;"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Core/Services/CallLogs/CallLogsService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-               <Location
-                  uuid = "6AB02932-1E70-4EB7-BDDB-579CCFBE6A31 - 34dbaab85e9336c4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) await resume partial function for CalloverDesktop.CallLogsService.fetchFirstPageOfLogs() async throws -&gt; Swift.Optional&lt;Swift.String&gt;"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Core/Services/CallLogs/CallLogsService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-               <Location
-                  uuid = "6AB02932-1E70-4EB7-BDDB-579CCFBE6A31 - 74ef1b7cbc934bb9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for CalloverDesktop.CallLogsService.fetchFirstPageOfLogs() async throws -&gt; Swift.Optional&lt;Swift.String&gt;"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Core/Services/CallLogs/CallLogsService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -558,64 +514,6 @@
             endingLineNumber = "54"
             landmarkName = "fetchRemoteFirstPage()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "5DA9DC97-DAC2-44FF-A544-0222FA5573F3 - 6460a9c995212a53"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for CalloverDesktop.CallHistoryViewModel.fetchRemoteFirstPage() async -&gt; ()"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Features/CallHistory/CallHistoryViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "54"
-                  endingLineNumber = "54">
-               </Location>
-               <Location
-                  uuid = "5DA9DC97-DAC2-44FF-A544-0222FA5573F3 - 296dd74b9823292b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) await resume partial function for CalloverDesktop.CallHistoryViewModel.fetchRemoteFirstPage() async -&gt; ()"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Features/CallHistory/CallHistoryViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "54"
-                  endingLineNumber = "54">
-               </Location>
-               <Location
-                  uuid = "5DA9DC97-DAC2-44FF-A544-0222FA5573F3 - de0d46fedd19d65d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for CalloverDesktop.CallHistoryViewModel.fetchRemoteFirstPage() async -&gt; ()"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Features/CallHistory/CallHistoryViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "54"
-                  endingLineNumber = "54">
-               </Location>
-               <Location
-                  uuid = "5DA9DC97-DAC2-44FF-A544-0222FA5573F3 - b7abff3705f1925f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for CalloverDesktop.CallHistoryViewModel.fetchRemoteFirstPage() async -&gt; ()"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Features/CallHistory/CallHistoryViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "54"
-                  endingLineNumber = "54">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
