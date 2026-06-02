@@ -36,6 +36,12 @@ private struct CallLogsServiceKey: EnvironmentKey {
     static let defaultValue: CallLogsServiceProtocol = MockCallLogsService()
 }
 
+private struct NotificationsServiceKey: EnvironmentKey {
+    static let defaultValue: NotificationsServiceProtocol = NotificationsService(
+        remoteDataSource: RemoteNotificationsService()
+    )
+}
+
 extension EnvironmentValues {
     var authService: AuthServiceProtocol {
         get { self[AuthServiceKey.self] }
@@ -64,5 +70,9 @@ extension EnvironmentValues {
     var callLogsService: CallLogsServiceProtocol {
         get { self[CallLogsServiceKey.self] }
         set { self[CallLogsServiceKey.self] = newValue }
+    }
+    var notificationsService: NotificationsServiceProtocol {
+        get { self[NotificationsServiceKey.self] }
+        set { self[NotificationsServiceKey.self] = newValue }
     }
 }

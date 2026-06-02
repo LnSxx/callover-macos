@@ -16,6 +16,7 @@ struct AuthenticatedView: View {
         realtimeSocketClient: RealtimeSocketClientProtocol,
         signalingService: SignalingServiceProtocol,
         callLogsService: CallLogsServiceProtocol,
+        notificationsService: NotificationsServiceProtocol,
     ) {
         _session = StateObject(
             wrappedValue: AuthenticatedSession(
@@ -24,6 +25,7 @@ struct AuthenticatedView: View {
                 realtimeSocketClient: realtimeSocketClient,
                 signalingService: signalingService,
                 callLogsService: callLogsService,
+                notificationsService: notificationsService,
             )
         )
     }
@@ -36,6 +38,7 @@ struct AuthenticatedView: View {
             .environmentObject(session.callMediaStore)
             .environmentObject(session.callCoordinator)
             .environmentObject(session.callHistoryViewModel)
+            .environmentObject(session.notificationsViewModel)
             .onAppear {
                 session.realtimeCoordinator.start()
             }

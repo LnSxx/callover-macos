@@ -4,6 +4,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
     case home
     case contacts
     case callHistory
+    case notifications
     case profile
     case account
     
@@ -14,6 +15,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .home: "Home"
         case .contacts: "Contacts"
         case .callHistory: "Call History"
+        case .notifications: "Notifications"
         case .profile: "Profile"
         case .account: "Account"
         }
@@ -24,6 +26,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .home: "teletype.answer"
         case .contacts: "person.crop.rectangle.stack"
         case .callHistory: "phone.badge.clock"
+        case .notifications: "bell"
         case .profile: "person.crop.circle"
         case .account: "key"
         }
@@ -40,6 +43,7 @@ struct DashboardView: View {
                     sidebarItem(.home)
                     sidebarItem(.contacts)
                     sidebarItem(.callHistory)
+                    sidebarItem(.notifications)
                 }
                 
                 Section("Account") {
@@ -57,6 +61,8 @@ struct DashboardView: View {
                 ContactsView()
             case .callHistory:
                 CallHistoryView()
+            case .notifications:
+                NotificationsView()
             case .profile:
                 ProfileView()
             case .account:
@@ -82,6 +88,9 @@ struct DashboardView: View {
     let presenceStore = PresenceStore()
     let callStore = CallStore()
     let callCoordinator = MockCallCoordinator()
+    let remoteNotificationsResource = RemoteNotificationsService()
+    let notificationsService = NotificationsService(remoteDataSource: remoteNotificationsResource)
+    let notificationsViewModel = NotificationsViewModel(service: notificationsService)
 
     DashboardView()
         .environmentObject(AuthGateViewModel(profileService: profileService))
@@ -89,9 +98,11 @@ struct DashboardView: View {
         .environmentObject(presenceStore)
         .environmentObject(callStore)
         .environmentObject(callCoordinator)
+        .environmentObject(notificationsViewModel)
         .environment(\.contactsService, contactsService)
         .environment(\.callLogsService, callLogsService)
         .environment(\.profileService, profileService)
         .environment(\.authService, AuthService())
         .environment(\.accountService, AccountService())
+        .environment(\.notificationsService, notificationsService)
 }

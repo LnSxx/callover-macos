@@ -16,6 +16,7 @@ final class AuthenticatedSession: ObservableObject {
     let callCoordinator: CallCoordinator
     let realtimeCoordinator: RealtimeSessionCoordinator
     let callHistoryViewModel: CallHistoryViewModel
+    let notificationsViewModel: NotificationsViewModel
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -25,6 +26,7 @@ final class AuthenticatedSession: ObservableObject {
         realtimeSocketClient: RealtimeSocketClientProtocol,
         signalingService: SignalingServiceProtocol,
         callLogsService: CallLogsServiceProtocol,
+        notificationsService: NotificationsServiceProtocol,
     ) {
         let contactsViewModel = ContactsViewModel(service: contactsService)
         let presenceStore = PresenceStore()
@@ -43,6 +45,7 @@ final class AuthenticatedSession: ObservableObject {
             callEventHandler: callCoordinator
         )
         let callHistoryViewModel = CallHistoryViewModel(service: callLogsService)
+        let notificationsViewModel = NotificationsViewModel(service: notificationsService)
         
         self.contactsViewModel = contactsViewModel
         self.presenceStore = presenceStore
@@ -52,6 +55,7 @@ final class AuthenticatedSession: ObservableObject {
         self.callCoordinator = callCoordinator
         self.realtimeCoordinator = realtimeCoordinator
         self.callHistoryViewModel = callHistoryViewModel
+        self.notificationsViewModel = notificationsViewModel
         
         contactsViewModel.$contacts
             .removeDuplicates()
