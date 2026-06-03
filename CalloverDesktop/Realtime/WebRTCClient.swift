@@ -188,7 +188,6 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         guard let peerConnection else {
             throw WebRTCClientError.peerConnectionMissing
         }
-        
         try await peerConnection.add(candidate)
     }
     

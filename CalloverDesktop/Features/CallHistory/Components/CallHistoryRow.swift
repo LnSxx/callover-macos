@@ -59,7 +59,7 @@ struct CallHistoryRow: View {
     }
     
     private var contact: Contact? {
-        contactsViewModel.contacts.first { $0.id == log.peerUserId }
+        contactsViewModel.contacts.first { $0.contactUserId == log.peerUserId }
     }
     
     private var iconColor: Color {

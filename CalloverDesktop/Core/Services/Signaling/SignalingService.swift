@@ -94,7 +94,6 @@ final class SignalingService: SignalingServiceProtocol {
         sdpMLineIndex: Int32,
         sdpMid: String?,
     ) {
-        
         realtimeSocketClient.emit(
             "call.ice-candidate",
             payload: [

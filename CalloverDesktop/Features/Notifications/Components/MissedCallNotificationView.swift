@@ -70,7 +70,7 @@ struct MissedCallNotificationView: View {
     }
     
     private var contact: Contact? {
-        contactsViewModel.contacts.first { $0.id == callerUserId }
+        contactsViewModel.contacts.first { $0.contactUserId == callerUserId }
     }
     
     private var callerText: String {

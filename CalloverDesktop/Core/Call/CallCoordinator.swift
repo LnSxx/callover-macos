@@ -250,7 +250,6 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
     
     private func sendIceCandidate(_ candidate: RTCIceCandidate) {
         guard let call = callStore.call else { return }
-        
         signalingService.sendIceCandidate(
             toUserId: call.direction == .outgoing ? call.calleeUserId : call.callerUserId,
             sdp: candidate.sdp,

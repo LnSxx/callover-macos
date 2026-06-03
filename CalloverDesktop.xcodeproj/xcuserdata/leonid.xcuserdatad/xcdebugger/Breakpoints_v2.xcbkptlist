@@ -536,7 +536,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "9879687D-0C43-44B8-9708-2E76C07BE7D2"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CalloverDesktop/Core/Services/Notifications/NotificationsService.swift"
@@ -546,50 +546,6 @@
             endingLineNumber = "35"
             landmarkName = "fetchFirstPage()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9879687D-0C43-44B8-9708-2E76C07BE7D2 - a09cfc69f9880aea"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for CalloverDesktop.NotificationsService.fetchFirstPage() async throws -&gt; CalloverDesktop.NotificationsFetchResult"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Core/Services/Notifications/NotificationsService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "35"
-                  endingLineNumber = "35">
-               </Location>
-               <Location
-                  uuid = "9879687D-0C43-44B8-9708-2E76C07BE7D2 - 1b8b4d99f8a00534"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for CalloverDesktop.NotificationsService.fetchFirstPage() async throws -&gt; CalloverDesktop.NotificationsFetchResult"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Core/Services/Notifications/NotificationsService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "35"
-                  endingLineNumber = "35">
-               </Location>
-               <Location
-                  uuid = "9879687D-0C43-44B8-9708-2E76C07BE7D2 - de33a4ac719630ed"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for CalloverDesktop.NotificationsService.fetchFirstPage() async throws -&gt; CalloverDesktop.NotificationsFetchResult"
-                  moduleName = "CalloverDesktop.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leonid/projects/CalloverDesktop/CalloverDesktop/Core/Services/Notifications/NotificationsService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "35"
-                  endingLineNumber = "35">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -628,7 +584,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "20CF98F7-D7C7-45B5-A19D-5DA35735BD98"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CalloverDesktop/Core/Services/Notifications/NotificationsService.swift"
