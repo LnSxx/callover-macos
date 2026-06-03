@@ -97,7 +97,7 @@ extension MockContactsService {
             contactUserId: "user-2",
             alias: "Catherine II the Great",
             note: "Empress of Russia",
-            isFavourite: false,
+            isFavourite: true,
             isBlocked: false,
             isMuted: true,
             createdAt: Date(),

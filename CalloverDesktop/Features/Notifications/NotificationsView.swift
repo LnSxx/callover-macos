@@ -22,8 +22,10 @@ struct NotificationsView: View {
             } else {
                 List() {
                     ForEach(notificationsViewModel.notifications) { notification in
-                        Text(notification.title)
+                        NotificationView(notification: notification)
                             .tag(notification.id)
+                            .listRowSeparator(.hidden)
+                            .padding(.vertical, 8)
                             .onAppear {
                                 Task {
                                     await notificationsViewModel.fetchNextPageIfNeeded(currentItem: notification)
@@ -62,10 +64,13 @@ struct NotificationsView: View {
     let remoteResource = RemoteNotificationsService()
     let service = NotificationsService(remoteDataSource: remoteResource)
     let viewModel = NotificationsViewModel(service: service)
+    let contactsService = MockContactsService()
+    let contactsViewModel = ContactsViewModel(service: contactsService)
 
     NavigationStack {
         NotificationsView()
             .environmentObject(viewModel)
+            .environmentObject(contactsViewModel)
             .environment(\.notificationsService, service)
     }
 }

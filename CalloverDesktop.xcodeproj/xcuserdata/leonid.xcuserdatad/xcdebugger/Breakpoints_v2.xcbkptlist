@@ -660,7 +660,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "B164A9E3-660B-4A21-A191-B102149A765A"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CalloverDesktop/Features/Notifications/NotificationsViewModel.swift"

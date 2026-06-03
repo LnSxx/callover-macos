@@ -8,11 +8,34 @@
 import SwiftUI
 
 struct NotificationView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    let notification: Notification
+    
+    init(notification: Notification) {
+        self.notification = notification
     }
-}
-
-#Preview {
-    NotificationView()
+    
+    var body: some View {
+        switch notification.type {
+        case .missedCall where notification.call?.callType != nil && notification.call?.fromUserId != nil:
+            MissedCallNotificationView(
+                callType: notification.call!.callType,
+                callerUserId: notification.call!.fromUserId,
+                endedAt: notification.createdAt,
+            )
+        case .mutedCall where notification.call?.callType != nil && notification.call?.fromUserId != nil:
+            MissedCallNotificationView(
+                callType: notification.call!.callType,
+                callerUserId: notification.call!.fromUserId,
+                endedAt: notification.createdAt,
+            )
+        case .serviceMessage:
+            ServiceNotificationView(
+                title: notification.title,
+                subtitle: notification.body,
+                createdAt: notification.createdAt,
+            )
+        default:
+            EmptyView()
+        }
+    }
 }

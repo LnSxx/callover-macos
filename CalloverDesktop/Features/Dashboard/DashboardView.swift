@@ -75,8 +75,10 @@ struct DashboardView: View {
     }
     
     private func sidebarItem(_ section: DashboardSection) -> some View {
-        Label(section.title, systemImage: section.systemImage)
-            .tag(section)
+        Label(
+            section.title,
+            systemImage: section.systemImage,
+        ).tag(section)
     }
 }
 
