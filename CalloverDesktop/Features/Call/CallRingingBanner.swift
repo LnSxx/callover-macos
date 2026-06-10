@@ -73,9 +73,6 @@ struct CallRingingBanner: View {
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .shadow(radius: 10)
         .frame(maxWidth: 520)
-        .onAppear {
-            AudioServicesPlaySystemSound(1000)
-        }
     }
 }
 

@@ -67,6 +67,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
                     return
                 }
                 
+                SoundEffectPlayer.shared.playLoop(name: "calling")
+                
                 let offer = try await webRTCClient.createOffer(
                     includeVideo: includeVideo
                 )
@@ -77,6 +79,7 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
                     type: type,
                 )
             } catch {
+                SoundEffectPlayer.shared.stop()
                 callStore.reset()
                 webRTCClient.close()
             }
@@ -90,6 +93,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
             do {
                 callStore.markIncomingCallAccepted()
                 
+                SoundEffectPlayer.shared.playOnce(name: "call_active")
+                
                 let includeVideo = call.type == .video
                 
                 try await webRTCClient.startLocalMedia(
@@ -100,6 +105,7 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
                 )
                 
                 guard let sdp = call.remoteDescription?.sdp else {
+                    SoundEffectPlayer.shared.stop()
                     callStore.reset()
                     webRTCClient.close()
                     return
@@ -121,6 +127,7 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
                     sdp: answer.sdp
                 )
             } catch {
+                SoundEffectPlayer.shared.stop()
                 callStore.reset()
                 webRTCClient.close()
             }
@@ -132,6 +139,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
             return
         }
         
+        SoundEffectPlayer.shared.playOnce(name: "call_cancelled")
+        
         signalingService.sendDecline(toUserId: targetUserId)
         webRTCClient.close()
     }
@@ -141,6 +150,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
             return
         }
         
+        SoundEffectPlayer.shared.playOnce(name: "call_cancelled")
+        
         signalingService.sendCancel(toUserId: targetUserId)
         webRTCClient.close()
     }
@@ -149,6 +160,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
         guard let peerUserId = callStore.markCurrentCallEnded() else {
             return
         }
+        
+        SoundEffectPlayer.shared.playOnce(name: "call_ended")
         
         signalingService.sendEnd(toUserId: peerUserId)
         webRTCClient.close()
@@ -188,6 +201,10 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
             sdp: payload.sdp,
             type: payload.type
         )
+        
+        if callStore.call?.status == .ringing {
+            SoundEffectPlayer.shared.playLoop(name: "ringing")
+        }
     }
     
     private func handleIncomingCallAnswer(_ payload: CallAnswerPayload) {
@@ -198,6 +215,8 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
                     sdp: payload.sdp
                 )
                 
+                SoundEffectPlayer.shared.playOnce(name: "call_active")
+                
                 let answer = RTCSessionDescription(
                     type: .answer,
                     sdp: payload.sdp
@@ -206,6 +225,7 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
                 try await webRTCClient.setRemoteDescription(answer)
             } catch {
                 print("Failed to set remote answer:", error)
+                SoundEffectPlayer.shared.stop()
                 callStore.reset()
                 webRTCClient.close()
             }
@@ -214,21 +234,29 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
     
     private func handleIncomingCallCancel(_ payload: CallCancelPayload) {
         callStore.markCallCancelledByPeer(fromUserId: payload.fromUserId)
+        
+        SoundEffectPlayer.shared.playOnce(name: "call_cancelled")
         webRTCClient.close()
     }
     
     private func handleIncomingCallDecline(_ payload: CallDeclinePayload) {
         callStore.markCallDeclinedByPeer(fromUserId: payload.fromUserId)
+        
+        SoundEffectPlayer.shared.playOnce(name: "call_cancelled")
         webRTCClient.close()
     }
     
     private func handleIncomingCallEnd(_ payload: CallEndPayload) {
         callStore.markCallEndedByPeer(fromUserId: payload.fromUserId)
+        
+        SoundEffectPlayer.shared.playOnce(name: "call_ended")
         webRTCClient.close()
     }
     
     private func handleIncomingCallTimeout(_ payload: CallTimeoutPayload) {
         callStore.markCurrentCallEndedByTimeout()
+        
+        SoundEffectPlayer.shared.playOnce(name: "call_ended")
         webRTCClient.close()
     }
     
