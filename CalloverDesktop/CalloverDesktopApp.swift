@@ -10,6 +10,8 @@ import CoreData
 
 @main
 struct CalloverDesktopApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     let persistenceController = PersistenceController.shared
     
     private var authService: AuthServiceProtocol
