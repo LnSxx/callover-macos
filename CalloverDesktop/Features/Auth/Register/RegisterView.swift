@@ -102,6 +102,16 @@ struct RegisterView: View {
 #Preview {
     let authService = AuthService()
     let profileService = ProfileService()
+    let pushTokensService = MockTokensService()
+    let accountService = AccountService()
+    let coreDataEraser = MockCoreDataEraser()
+    
     RegisterView(authService: authService) {}
-        .environmentObject(AuthGateViewModel(profileService: profileService))
+        .environmentObject(AuthGateViewModel(
+            profileService: profileService,
+            pushTokensService: pushTokensService,
+            authService: authService,
+            accountService: accountService,
+            coreDataEraser: coreDataEraser,
+        ))
 }

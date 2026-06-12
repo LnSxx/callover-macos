@@ -100,6 +100,16 @@ struct LoginView: View {
 #Preview {
     let authService = AuthService()
     let profileService = ProfileService()
+    let pushTokensService = MockTokensService()
+    let accountService = AccountService()
+    let coreDataEraser = MockCoreDataEraser()
+    
     LoginView(authService: authService) {}
-        .environmentObject(AuthGateViewModel(profileService: profileService))
+        .environmentObject(AuthGateViewModel(
+            profileService: profileService,
+            pushTokensService: pushTokensService,
+            authService: authService,
+            accountService: accountService,
+            coreDataEraser: coreDataEraser,
+        ))
 }

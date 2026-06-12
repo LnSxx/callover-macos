@@ -93,9 +93,19 @@ struct DashboardView: View {
     let remoteNotificationsResource = RemoteNotificationsService()
     let notificationsService = NotificationsService(remoteDataSource: remoteNotificationsResource)
     let notificationsViewModel = NotificationsViewModel(service: notificationsService)
+    let pushTokensService = MockTokensService()
+    let accountService = AccountService()
+    let coreDataEraser = MockCoreDataEraser()
+    let authService = AuthService()
 
     DashboardView()
-        .environmentObject(AuthGateViewModel(profileService: profileService))
+        .environmentObject(AuthGateViewModel(
+            profileService: profileService,
+            pushTokensService: pushTokensService,
+            authService: authService,
+            accountService: accountService,
+            coreDataEraser: coreDataEraser,
+        ))
         .environmentObject(contactsViewModel)
         .environmentObject(presenceStore)
         .environmentObject(callStore)
@@ -104,7 +114,7 @@ struct DashboardView: View {
         .environment(\.contactsService, contactsService)
         .environment(\.callLogsService, callLogsService)
         .environment(\.profileService, profileService)
-        .environment(\.authService, AuthService())
-        .environment(\.accountService, AccountService())
+        .environment(\.authService, authService)
+        .environment(\.accountService, accountService)
         .environment(\.notificationsService, notificationsService)
 }

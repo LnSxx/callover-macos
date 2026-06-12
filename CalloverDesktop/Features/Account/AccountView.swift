@@ -9,8 +9,6 @@ import SwiftUI
 
 struct AccountView: View {
     @EnvironmentObject private var authGateViewModel: AuthGateViewModel
-    @Environment(\.authService) var authService
-    @Environment(\.accountService) var accountService
     
     @State private var isShowingDeleteConfirmation = false
 
@@ -26,8 +24,7 @@ struct AccountView: View {
 
                 Button(role: .cancel) {
                     Task {
-                        try await authService.logout()
-                        authGateViewModel.logout()
+                        await authGateViewModel.logout()
                     }
                 } label: {
                     Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
@@ -43,7 +40,7 @@ struct AccountView: View {
                     .font(.headline)
                     .foregroundStyle(.red)
 
-                Text("Deleting your account is permanent. Your profile, contacts, sessions and local call history will be forever removed.")
+                Text("Deleting your account is permanent. Your profile, contacts, sessions, notifications and call history will be removed.")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: 520, alignment: .leading)
 
@@ -59,8 +56,7 @@ struct AccountView: View {
                 ) {
                     Button("Delete Account", role: .destructive) {
                         Task {
-                            try await accountService.deleteAccount()
-                            authGateViewModel.logout()
+                            await authGateViewModel.deleteAccount()
                         }
                     }
                     Button("Cancel", role: .cancel) {}
@@ -79,8 +75,16 @@ struct AccountView: View {
 #Preview {
     let authService = AuthService()
     let profileService = ProfileService()
+    let pushTokensService = MockTokensService()
+    let accountService = AccountService()
+    let coreDataEraser = MockCoreDataEraser()
     
     AccountView()
-        .environmentObject(AuthGateViewModel(profileService: profileService))
-        .environment(\.authService, authService)
+        .environmentObject(AuthGateViewModel(
+            profileService: profileService,
+            pushTokensService: pushTokensService,
+            authService: authService,
+            accountService: accountService,
+            coreDataEraser: coreDataEraser,
+        ))
 }

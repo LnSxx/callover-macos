@@ -22,6 +22,8 @@ struct CalloverDesktopApp: App {
     private var signalingService: SignalingServiceProtocol
     private var callLogsService: CallLogsServiceProtocol
     private var notificationsService: NotificationsServiceProtocol
+    private var pushTokensService: PushTokensServiceProtocol
+    private var coreDataEraser: CoreDataEraserProtocol
     
     @StateObject private var authGateViewModel: AuthGateViewModel
     
@@ -51,6 +53,8 @@ struct CalloverDesktopApp: App {
         )
         let remoteNotificationsServiceInstance = RemoteNotificationsService()
         let notificationsServiceInstance = NotificationsService(remoteDataSource: remoteNotificationsServiceInstance)
+        let pushTokensServiceInstance = PushTokensService()
+        let coreDataEraserInstance = CoreDataEraser(persistentContainer: persistenceController.container)
         
         self.authService = authServiceInstance
         self.profileService = profileServiceInstance
@@ -60,8 +64,17 @@ struct CalloverDesktopApp: App {
         self.signalingService = singalingServiceInstance
         self.callLogsService = callLogsServiceInstance
         self.notificationsService = notificationsServiceInstance
+        self.pushTokensService = pushTokensServiceInstance
+        self.coreDataEraser = coreDataEraserInstance
         
-        let authGateViewModelInstance = AuthGateViewModel(profileService: profileServiceInstance)
+        let authGateViewModelInstance = AuthGateViewModel(
+            profileService: profileServiceInstance,
+            pushTokensService: pushTokensServiceInstance,
+            authService: authServiceInstance,
+            accountService: accountServiceInstance,
+            coreDataEraser: coreDataEraserInstance,
+            
+        )
         _authGateViewModel = StateObject(wrappedValue: authGateViewModelInstance)
     }
     

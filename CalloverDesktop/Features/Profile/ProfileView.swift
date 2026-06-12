@@ -101,7 +101,18 @@ private struct ProfileRow<Content: View>: View {
 }
 
 #Preview {
+    let authService = AuthService()
     let profileService = ProfileService()
+    let pushTokensService = MockTokensService()
+    let accountService = AccountService()
+    let coreDataEraser = MockCoreDataEraser()
+    
     ProfileView()
-        .environmentObject(AuthGateViewModel(profileService: profileService))
+        .environmentObject(AuthGateViewModel(
+            profileService: profileService,
+            pushTokensService: pushTokensService,
+            authService: authService,
+            accountService: accountService,
+            coreDataEraser: coreDataEraser,
+        ))
 }

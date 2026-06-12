@@ -11,20 +11,17 @@ import Combine
 @MainActor
 final class PushTokenStore: ObservableObject {
     static let shared = PushTokenStore()
-    
+
     @Published private(set) var token: String?
-    
+
+    private let key = "apns_device_token"
+
     private init() {
-        token = UserDefaults.standard.string(forKey: "apns_device_token")
+        token = UserDefaults.standard.string(forKey: key)
     }
-    
+
     func setToken(_ token: String) {
         self.token = token
-        UserDefaults.standard.set(token, forKey: "apns_device_token")
-    }
-    
-    func clear() {
-        token = nil
-        UserDefaults.standard.removeObject(forKey: "apns_device_token")
+        UserDefaults.standard.set(token, forKey: key)
     }
 }
