@@ -17,6 +17,7 @@ struct AuthenticatedView: View {
         signalingService: SignalingServiceProtocol,
         callLogsService: CallLogsServiceProtocol,
         notificationsService: NotificationsServiceProtocol,
+        currentCallService: CurrentCallServiceProtocol,
     ) {
         _session = StateObject(
             wrappedValue: AuthenticatedSession(
@@ -26,6 +27,7 @@ struct AuthenticatedView: View {
                 signalingService: signalingService,
                 callLogsService: callLogsService,
                 notificationsService: notificationsService,
+                currentCallService: currentCallService,
             )
         )
     }
@@ -40,10 +42,10 @@ struct AuthenticatedView: View {
             .environmentObject(session.callHistoryViewModel)
             .environmentObject(session.notificationsViewModel)
             .onAppear {
-                session.realtimeCoordinator.start()
+                session.start()
             }
             .onDisappear {
-                session.realtimeCoordinator.stop()
+                session.stop()
             }
     }
 }

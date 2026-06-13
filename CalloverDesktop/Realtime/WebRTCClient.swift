@@ -25,6 +25,10 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
     private var pendingIceCandidates: [RTCIceCandidate] = []
     private var hasRemoteDescription = false
     
+    var canAddRemoteIceCandidate: Bool {
+        peerConnection != nil && hasRemoteDescription
+    }
+    
     var onIceCandidate: ((RTCIceCandidate) -> Void)?
     
     init(mediaStore: CallMediaStore) {
@@ -36,48 +40,48 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         includeVideo: Bool = true
     ) async throws {
         let hasMicrophonePermission = await requestPermission(for: .audio)
-
+        
         if hasMicrophonePermission {
             let audioSource = factory.audioSource(with: nil)
             let audioTrack = factory.audioTrack(
                 with: audioSource,
                 trackId: "local-audio"
             )
-
+            
             localAudioTrack = audioTrack
         }
-
+        
         guard includeVideo else {
             return
         }
-
+        
         let hasCameraPermission = await requestPermission(for: .video)
-
+        
         guard hasCameraPermission else {
             return
         }
-
+        
         let videoSource = factory.videoSource()
         let videoTrack = factory.videoTrack(
             with: videoSource,
             trackId: "local-video"
         )
-
+        
         localVideoTrack = videoTrack
         mediaStore.localVideoTrack = videoTrack
-
+        
         let capturer = RTCCameraVideoCapturer(delegate: videoSource)
         videoCapturer = capturer
-
+        
         guard let device = RTCCameraVideoCapturer.captureDevices().first,
               let format = RTCCameraVideoCapturer.supportedFormats(for: device).last else {
             return
         }
-
+        
         let fps = format.videoSupportedFrameRateRanges
             .map { Int($0.maxFrameRate) }
             .max() ?? 30
-
+        
         try await capturer.startCapture(
             with: device,
             format: format,
@@ -170,17 +174,25 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
     
     func setRemoteDescription(_ description: RTCSessionDescription) async throws {
         guard let peerConnection else {
-            throw WebRTCClientError.peerConnectionMissing
+            throw WebRTCClientError.peerConnectionNotCreated
         }
         
-        try await peerConnection.setRemoteDescription(description)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            peerConnection.setRemoteDescription(description) { error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
         
         hasRemoteDescription = true
-        try await flushPendingIceCandidates()
+        await flushPendingIceCandidates()
     }
     
     func addIceCandidate(_ candidate: RTCIceCandidate) async throws {
-        guard hasRemoteDescription else {
+        guard canAddRemoteIceCandidate else {
             pendingIceCandidates.append(candidate)
             return
         }
@@ -188,6 +200,7 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         guard let peerConnection else {
             throw WebRTCClientError.peerConnectionMissing
         }
+        
         try await peerConnection.add(candidate)
     }
     
@@ -250,20 +263,25 @@ final class WebRTCClient: NSObject, ObservableObject, RTCPeerConnectionDelegate 
         }
     }
     
-    private func flushPendingIceCandidates() async throws {
+    private func flushPendingIceCandidates() async {
         guard let peerConnection else {
-            throw WebRTCClientError.peerConnectionMissing
+            return
         }
         
         let candidates = pendingIceCandidates
         pendingIceCandidates.removeAll()
         
         for candidate in candidates {
-            try await peerConnection.add(candidate)
+            do {
+                try await peerConnection.add(candidate)
+            } catch {
+                print("Failed to flush pending ICE candidate:", error)
+            }
         }
     }
 }
 
 enum WebRTCClientError: Error {
     case peerConnectionMissing
+    case peerConnectionNotCreated
 }

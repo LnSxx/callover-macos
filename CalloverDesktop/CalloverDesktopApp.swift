@@ -24,6 +24,7 @@ struct CalloverDesktopApp: App {
     private var notificationsService: NotificationsServiceProtocol
     private var pushTokensService: PushTokensServiceProtocol
     private var coreDataEraser: CoreDataEraserProtocol
+    private var currentCallService: CurrentCallServiceProtocol
     
     @StateObject private var authGateViewModel: AuthGateViewModel
     
@@ -55,6 +56,7 @@ struct CalloverDesktopApp: App {
         let notificationsServiceInstance = NotificationsService(remoteDataSource: remoteNotificationsServiceInstance)
         let pushTokensServiceInstance = PushTokensService()
         let coreDataEraserInstance = CoreDataEraser(persistentContainer: persistenceController.container)
+        let currentCallServiceInstance = CurrentCallService()
         
         self.authService = authServiceInstance
         self.profileService = profileServiceInstance
@@ -66,6 +68,7 @@ struct CalloverDesktopApp: App {
         self.notificationsService = notificationsServiceInstance
         self.pushTokensService = pushTokensServiceInstance
         self.coreDataEraser = coreDataEraserInstance
+        self.currentCallService = currentCallServiceInstance
         
         let authGateViewModelInstance = AuthGateViewModel(
             profileService: profileServiceInstance,
@@ -94,6 +97,7 @@ struct CalloverDesktopApp: App {
                 .environment(\.signalingService, signalingService)
                 .environment(\.callLogsService, callLogsService)
                 .environment(\.notificationsService, notificationsService)
+                .environment(\.currentCallService, currentCallService)
         }
     }
 }

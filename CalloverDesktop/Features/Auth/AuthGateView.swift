@@ -13,6 +13,7 @@ struct AuthGateView: View {
     @Environment(\.signalingService) var signalingService
     @Environment(\.callLogsService) var callLogsService
     @Environment(\.notificationsService) var notificationsService
+    @Environment(\.currentCallService) var currentCallService
     @EnvironmentObject var viewModel: AuthGateViewModel
     
     var body: some View {
@@ -28,6 +29,7 @@ struct AuthGateView: View {
                     signalingService: signalingService,
                     callLogsService: callLogsService,
                     notificationsService: notificationsService,
+                    currentCallService: currentCallService,
                 )
             case .unauthenticated:
                 UnauthenticatedView()

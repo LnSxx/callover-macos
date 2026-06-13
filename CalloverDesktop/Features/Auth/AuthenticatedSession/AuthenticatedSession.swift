@@ -19,6 +19,7 @@ final class AuthenticatedSession: ObservableObject {
     let notificationsViewModel: NotificationsViewModel
     
     private var cancellables = Set<AnyCancellable>()
+    private var didStart = false
     
     init(
         currentUserId: String,
@@ -27,6 +28,7 @@ final class AuthenticatedSession: ObservableObject {
         signalingService: SignalingServiceProtocol,
         callLogsService: CallLogsServiceProtocol,
         notificationsService: NotificationsServiceProtocol,
+        currentCallService: CurrentCallServiceProtocol,
     ) {
         let contactsViewModel = ContactsViewModel(service: contactsService)
         let presenceStore = PresenceStore()
@@ -37,7 +39,8 @@ final class AuthenticatedSession: ObservableObject {
             currentUserId: currentUserId,
             signalingService: signalingService,
             callStore: callStore,
-            webRTCClient: webRTCClient
+            webRTCClient: webRTCClient,
+            currentCallService: currentCallService,
         )
         let realtimeCoordinator = RealtimeSessionCoordinator(
             realtimeSocketClient: realtimeSocketClient,
@@ -63,5 +66,24 @@ final class AuthenticatedSession: ObservableObject {
                 realtimeCoordinator?.subscribePresence(for: contacts)
             }
             .store(in: &cancellables)
+    }
+    
+    func start() {
+        guard !didStart else {
+            return
+        }
+        
+        didStart = true
+        
+        realtimeCoordinator.start()
+        
+        Task {
+            await callCoordinator.restoreCurrentRingingCallIfNeeded()
+        }
+    }
+    
+    func stop() {
+        realtimeCoordinator.stop()
+        didStart = false
     }
 }

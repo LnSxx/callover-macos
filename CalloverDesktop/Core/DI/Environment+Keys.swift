@@ -42,6 +42,10 @@ private struct NotificationsServiceKey: EnvironmentKey {
     )
 }
 
+private struct CurrentCallServiceKey: EnvironmentKey {
+    static let defaultValue: CurrentCallServiceProtocol = MockCurrentCallService()
+}
+
 extension EnvironmentValues {
     var authService: AuthServiceProtocol {
         get { self[AuthServiceKey.self] }
@@ -74,5 +78,9 @@ extension EnvironmentValues {
     var notificationsService: NotificationsServiceProtocol {
         get { self[NotificationsServiceKey.self] }
         set { self[NotificationsServiceKey.self] = newValue }
+    }
+    var currentCallService: CurrentCallServiceProtocol {
+        get { self[CurrentCallServiceKey.self] }
+        set { self[CurrentCallServiceKey.self] = newValue }
     }
 }

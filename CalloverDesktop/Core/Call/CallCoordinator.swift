@@ -17,6 +17,7 @@ protocol CallCoordinatorProtocol: AnyObject {
     func declineCall()
     func cancelOutgoingCall()
     func endCurrentCall()
+    func restoreCurrentRingingCallIfNeeded() async 
 }
 
 @MainActor
@@ -25,18 +26,20 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
     private let signalingService: SignalingServiceProtocol
     private let callStore: CallStore
     private let webRTCClient: WebRTCClient
+    private let currentCallService: CurrentCallServiceProtocol
     
     init(
         currentUserId: String,
         signalingService: SignalingServiceProtocol,
         callStore: CallStore,
         webRTCClient: WebRTCClient,
+        currentCallService: CurrentCallServiceProtocol,
     ) {
         self.currentUserId = currentUserId
         self.signalingService = signalingService
         self.callStore = callStore
-        
         self.webRTCClient = webRTCClient
+        self.currentCallService = currentCallService
         
         self.webRTCClient.onIceCandidate = { [weak self] candidate in
             self?.sendIceCandidate(candidate)
@@ -165,6 +168,47 @@ final class CallCoordinator: ObservableObject, CallCoordinatorProtocol, Realtime
         
         signalingService.sendEnd(toUserId: peerUserId)
         webRTCClient.close()
+    }
+    
+    func restoreCurrentRingingCallIfNeeded() async {
+        do {
+            if callStore.isBusy {
+                return
+            }
+            
+            let response = try await currentCallService.getCurrentRingingCall()
+            
+            guard let callDTO = response.call else {
+                return
+            }
+            
+            let call = callDTO.toDomain()
+            
+            guard call.status == .ringing else {
+                return
+            }
+            
+            guard let sdp = call.remoteDescription?.sdp else {
+                return
+            }
+            
+            callStore.registerIncomingCall(
+                currentUserId: currentUserId,
+                fromUserId: call.callerUserId,
+                sdp: sdp,
+                type: call.type,
+            )
+            
+            for iceCandidate in response.pendingIceCandidates {
+                try await webRTCClient.addIceCandidate(
+                    iceCandidate.toRTCIceCandidate()
+                )
+            }
+            
+            SoundEffectPlayer.shared.playLoop(name: "ringing")
+        } catch {
+            print("Failed to restore current ringing call:", error)
+        }
     }
     
     func handle(_ event: RealtimeEvent) {
@@ -297,4 +341,6 @@ class MockCallCoordinator: ObservableObject, CallCoordinatorProtocol {
     func cancelOutgoingCall() {}
     
     func endCurrentCall() {}
+    
+    func restoreCurrentRingingCallIfNeeded() {}
 }
